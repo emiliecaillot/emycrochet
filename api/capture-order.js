@@ -2,7 +2,11 @@
 
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const PAYPAL_SECRET = process.env.PAYPAL_SECRET;
-const PAYPAL_API = "https://api-m.sandbox.paypal.com";
+const PAYPAL_ENV = process.env.PAYPAL_ENV || "sandbox"; // 'sandbox' ou 'live'
+const PAYPAL_BASE =
+  PAYPAL_ENV === "live"
+    ? "https://api-m.paypal.com"
+    : "https://api-m.sandbox.paypal.com";
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -20,7 +24,7 @@ export default async function handler(req, res) {
     const basic = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_SECRET}`).toString(
       "base64"
     );
-    const tokenRes = await fetch(`${PAYPAL_API}/v1/oauth2/token`, {
+    const tokenRes = await fetch(`${PAYPAL_BASE}/v1/oauth2/token`, {
       method: "POST",
       headers: {
         Authorization: `Basic ${basic}`,
@@ -37,7 +41,7 @@ export default async function handler(req, res) {
     const tokenData = await tokenRes.json();
 
     const capRes = await fetch(
-      `${PAYPAL_API}/v2/checkout/orders/${orderID}/capture`,
+      `${PAYPAL_BASE}/v2/checkout/orders/${orderID}/capture`,
       {
         method: "POST",
         headers: {

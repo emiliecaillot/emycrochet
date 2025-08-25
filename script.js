@@ -1,30 +1,27 @@
 /*
  * script.js – logique principale du site Emy’Crochet
  *
- * Ce fichier regroupe les fonctions nécessaires pour récupérer les données des
- * produits depuis un Google Sheet, gérer le panier via localStorage et
- * afficher les produits sur les différentes pages. Les variables sheetId et
- * sheetName doivent être renseignées avec l'ID et le nom de l'onglet de
- * votre feuille publique. Consultez la documentation Google pour rendre
- * votre feuille « Toute personne disposant du lien » afin de permettre
- * l’accès en lecture 【3927857148154†L186-L210】. Les données doivent être
- * structurées avec les colonnes : id, name, description, option, price,
- * images, delay_min, delay_max, featured et active comme indiqué dans la
- * demande.
+ * - Récupération produits depuis Google Sheet (TSV)
+ * - Panier via localStorage
+ * - Rendus UI (home, boutique, panier)
+ * - Intégration PayPal côté front : crée/capture l’ordre via tes routes Vercel
  */
 
-/*
- * Configuration – remplacez les valeurs ci‑dessous par celles de votre
- * propre feuille. sheetId correspond à l’identifiant du document Google
- * Sheets visible dans l’URL entre « /d/ » et « / ».
- */
+/* ===================== CONFIG GÉNÉRALE ===================== */
+
 const csvUrl =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vQi8LisKQjdMENRFQqMfnoWzipbBQOJwUOtT7qYuiSnLVWeS3w4KQ-WUcgjcqDpGpl0xZWF9RaCd2cv/pub?output=tsv";
+
+/** Domaine déployé (Vercel) pour appeler l’API serverless */
+const API_BASE = window.location.origin || "https://emycrochet.vercel.app";
+
+/* ===================== PRODUITS (Google Sheet) ===================== */
+
 /**
  * Récupère et parse les produits depuis un Google Sheet publié en TSV,
- * en se basant sur les NOMS de colonnes, pas sur les index.
- * Colonnes attendues (casse insensible) :
- * id, name, description, size, option, price, images, delay_min, delay_max, featured, active
+ * en se basant sur les NOMS de colonnes (casse insensible).
+ * Colonnes attendues : id, name, description, size, option, price, images,
+ * delay_min, delay_max, featured, active
  */
 async function fetchProducts() {
   const response = await fetch(csvUrl);
@@ -32,13 +29,9 @@ async function fetchProducts() {
   const lines = text.trim().split(/\r?\n/);
   if (lines.length < 2) return [];
 
-  // entêtes
   const headers = lines[0].split("\t").map((h) => h.trim().toLowerCase());
-
-  // helper pour récupérer l’index d’une colonne par nom
   const col = (name) => headers.indexOf(name);
 
-  // indices (−1 si absent)
   const idx = {
     id: col("id"),
     name: col("name"),
@@ -53,16 +46,13 @@ async function fetchProducts() {
     active: col("active"),
   };
 
-  // parse lignes
   return lines.slice(1).map((line) => {
     const cols = line.split("\t");
     const get = (i) => (i >= 0 ? (cols[i] ?? "").trim() : "");
 
-    // price: accepte virgule ou point
     const rawPrice = get(idx.price).replace(",", ".");
     const priceNum = parseFloat(rawPrice) || 0;
 
-    // images: séparées par |
     const images = get(idx.images)
       ? get(idx.images)
           .split("|")
@@ -74,7 +64,7 @@ async function fetchProducts() {
       id: get(idx.id),
       name: get(idx.name),
       description: get(idx.desc),
-      size: get(idx.size), // 👈 nouvelle colonne, lue par nom
+      size: get(idx.size),
       option: get(idx.option),
       price: priceNum,
       images,
@@ -86,12 +76,11 @@ async function fetchProducts() {
   });
 }
 
-// ========= Atelier Banner (settings dynamiques) =========
-// ====== CONFIG ======
+/* ===================== ATELIER – Bandeau délais dynamiques ===================== */
+
 const BANNER_TSV_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpNDYq-318n7Kn_YcvIE0f3pWqb1tTaMQqQ1wV5I-fNjN3zP23Dmym_aDxGx6M4z8n3_Dc9WhMDUdB/pub?output=tsv";
 
-// ====== UTILS ======
 function showAtelierError(msg) {
   const wrap = document.getElementById("atelier-banner");
   const textEl = document.getElementById("atelier-text");
@@ -105,25 +94,16 @@ function showAtelierError(msg) {
   console.error("[Atelier]", msg);
 }
 
-// ====== FETCH + PARSE (exactement tes colonnes) ======
 async function fetchAtelierSettingsExact() {
   const res = await fetch(BANNER_TSV_URL, { cache: "no-store" });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const tsv = await res.text();
-
-  // Debug console brut
-  console.log("[Atelier] TSV brut:", tsv);
 
   const lines = tsv.trim().split(/\r?\n/);
   if (lines.length < 2) throw new Error("TSV sans données (moins de 2 lignes)");
 
   const headers = lines[0].split("\t").map((h) => h.trim().toLowerCase());
   const values = lines[1].split("\t").map((v) => v.trim());
-
-  console.log("[Atelier] Headers:", headers);
-  console.log("[Atelier] Row1:", values);
-
-  // Mapping strict
   const get = (name) => {
     const i = headers.indexOf(name);
     if (i < 0) throw new Error(`Colonne absente: ${name}`);
@@ -147,7 +127,6 @@ async function fetchAtelierSettingsExact() {
   };
 }
 
-// ====== RENDER ======
 function renderAtelierBanner(data) {
   const wrap = document.getElementById("atelier-banner");
   const textEl = document.getElementById("atelier-text");
@@ -165,7 +144,6 @@ function renderAtelierBanner(data) {
   const hasLarge =
     Number.isFinite(data.large_min) && Number.isFinite(data.large_max);
 
-  // Texte
   if (hasSmall && hasLarge) {
     textEl.textContent =
       "Délais de confection indicatifs selon la taille de la pièce.";
@@ -178,7 +156,6 @@ function renderAtelierBanner(data) {
       "Délais de confection variables selon les commandes en cours.";
   }
 
-  // Badges
   badges.innerHTML = "";
   if (hasSmall) {
     const b = document.createElement("span");
@@ -202,7 +179,6 @@ function renderAtelierBanner(data) {
     badges.appendChild(b);
   }
 
-  // Note
   if (data.note) {
     noteEl.textContent = data.note;
     noteEl.classList.remove("hidden");
@@ -213,7 +189,6 @@ function renderAtelierBanner(data) {
   wrap.classList.remove("hidden");
 }
 
-// ====== INIT ======
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     const data = await fetchAtelierSettingsExact();
@@ -223,11 +198,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-/**
- * Convertit différentes valeurs (booléen JS, 0/1, "TRUE", "FALSE", etc.) en
- * booléen réel.
- * @param {any} val
- */
+/* ===================== OUTILS GÉNÉRAUX ===================== */
+
 function toBoolean(val) {
   if (typeof val === "boolean") return val;
   if (typeof val === "number") return val !== 0;
@@ -238,10 +210,8 @@ function toBoolean(val) {
   return false;
 }
 
-/**
- * Charge le panier depuis localStorage. Si aucun panier n’est présent, un
- * tableau vide est renvoyé.
- */
+/* ===================== PANIER (localStorage) ===================== */
+
 function loadCart() {
   try {
     const stored = localStorage.getItem("cart");
@@ -251,80 +221,48 @@ function loadCart() {
   }
 }
 
-/**
- * Sauvegarde le panier dans localStorage.
- */
 function saveCart(cart) {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-/**
- * Ajoute un produit au panier. Si le produit existe déjà, on incrémente sa
- * quantité.
- */
 function addToCart(productId) {
   const cart = loadCart();
   const existing = cart.find((item) => item.id === productId);
-  if (existing) {
-    existing.qty += 1;
-  } else {
-    cart.push({ id: productId, qty: 1 });
-  }
+  if (existing) existing.qty += 1;
+  else cart.push({ id: productId, qty: 1 });
   saveCart(cart);
   updateCartCount();
 }
 
-/**
- * Supprime un produit du panier. Si la quantité est supérieure à 1, elle est
- * décrémentée ; sinon l’entrée est retirée complètement.
- */
 function removeFromCart(productId) {
   const cart = loadCart();
   const idx = cart.findIndex((item) => item.id === productId);
   if (idx > -1) {
-    if (cart[idx].qty > 1) {
-      cart[idx].qty -= 1;
-    } else {
-      cart.splice(idx, 1);
-    }
+    if (cart[idx].qty > 1) cart[idx].qty -= 1;
+    else cart.splice(idx, 1);
     saveCart(cart);
     updateCartCount();
   }
 }
 
-/**
- * Met à jour le nombre affiché sur l’icône du panier dans l’en‑tête. Appelé à
- * chaque modification du panier et au chargement des pages.
- */
 function updateCartCount() {
   const countBubble = document.querySelector(".cart-count");
   if (!countBubble) return;
   const cart = loadCart();
   const count = cart.reduce((sum, item) => sum + item.qty, 0);
   countBubble.textContent = count;
-  if (count > 0) {
-    countBubble.classList.remove("invisible");
-  } else {
-    countBubble.classList.add("invisible");
-  }
+  if (count > 0) countBubble.classList.remove("invisible");
+  else countBubble.classList.add("invisible");
 }
 
-/**
- * Affiche les produits mis en avant sur la page d’accueil. Cette fonction
- * prend un tableau de produits filtré pour ne conserver que les produits
- * actifs et « featured » puis crée des cartes HTML.
- */
+/* ===================== RENDUS UI ===================== */
+
 function renderFeatured(products) {
   const container = document.getElementById("featured-container");
   if (!container) return;
   container.innerHTML = "";
 
-  // 1) filtre
-  let featured = products.filter((p) => p.active && p.featured);
-
-  // 2) limite à 3 (option : mélange léger pour varier l’ordre)
-  // featured.sort(() => Math.random() - 0.5); // <- décommente si tu veux random
-  featured = featured.slice(0, 3);
+  let featured = products.filter((p) => p.active && p.featured).slice(0, 3);
 
   if (featured.length === 0) {
     container.innerHTML =
@@ -336,21 +274,20 @@ function renderFeatured(products) {
     const card = document.createElement("div");
     card.className =
       "bg-white rounded-xl shadow hover:shadow-lg transition p-2 flex flex-col";
-    // Image
+
     const img = document.createElement("img");
     img.className = "w-96 h-96 object-cover rounded-xl mb-2";
     img.src = product.images[0] || "";
     img.alt = product.name;
-    // Titre
+
     const title = document.createElement("h3");
     title.className = "font-semibold text-lg mb-1 text-txt";
     title.textContent = product.name;
-    // Prix
+
     const price = document.createElement("p");
     price.className = "text-[#f3988b] font-bold mb-2";
-    price.textContent = product.price.toFixed(2) + " €";
+    price.textContent = product.price.toFixed(2) + " €";
 
-    // 👉 Lien "Voir" vers la fiche dans la boutique
     const btn = document.createElement("a");
     btn.href = `boutique.html#p-${product.id}`;
     btn.className =
@@ -365,15 +302,11 @@ function renderFeatured(products) {
   });
 }
 
-/**
- * Affiche tous les produits actifs sur la page boutique avec leurs détails.
- */
 function renderBoutique(products) {
   const container = document.getElementById("boutique-container");
   if (!container) return;
 
   container.innerHTML = "";
-
   const activeProducts = products.filter((p) => p.active);
 
   if (activeProducts.length === 0) {
@@ -388,14 +321,12 @@ function renderBoutique(products) {
       "bg-white rounded-lg shadow hover:shadow-lg transition p-4 flex flex-col";
     card.id = `p-${product.id}`;
 
-    // === (1) Carrousel ou image simple ===
     if (product.images && product.images.length > 1) {
       const wrap = document.createElement("div");
       wrap.className = "relative overflow-hidden rounded mb-2";
       wrap.setAttribute("data-carousel", "");
       wrap.setAttribute("data-product-id", product.id);
 
-      // piste
       const track = document.createElement("div");
       track.className = "flex transition-transform duration-500";
       track.setAttribute("data-track", "");
@@ -411,7 +342,6 @@ function renderBoutique(products) {
 
       wrap.appendChild(track);
 
-      // contrôles & dots
       const prev = document.createElement("button");
       prev.className =
         "absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur rounded-full w-8 h-8 grid place-items-center cursor-pointer";
@@ -436,7 +366,6 @@ function renderBoutique(products) {
 
       card.appendChild(wrap);
     } else {
-      // image unique
       const img = document.createElement("img");
       img.className = "w-full aspect-square object-cover rounded mb-2";
       img.src = product.images?.[0] || "";
@@ -444,13 +373,11 @@ function renderBoutique(products) {
       card.appendChild(img);
     }
 
-    // === (2) Titre ===
     const title = document.createElement("h3");
     title.className = "font-semibold text-lg text-gray-800";
     title.textContent = product.name || "";
     card.appendChild(title);
 
-    // === (3) Description ===
     if (product.description) {
       const desc = document.createElement("p");
       desc.className = "text-gray-600 text-sm mb-2";
@@ -458,7 +385,6 @@ function renderBoutique(products) {
       card.appendChild(desc);
     }
 
-    // === (4) Taille ===
     if (product.size) {
       const sizeElem = document.createElement("p");
       sizeElem.className = "text-gray-500 text-sm mb-1";
@@ -467,7 +393,6 @@ function renderBoutique(products) {
       card.appendChild(sizeElem);
     }
 
-    // === (5) Options ===
     if (product.option) {
       const optElem = document.createElement("p");
       optElem.className = "text-gray-500 text-sm mb-1";
@@ -476,7 +401,6 @@ function renderBoutique(products) {
       card.appendChild(optElem);
     }
 
-    // === (6) Délai ===
     if (product.delay_min && product.delay_max) {
       const delay = document.createElement("p");
       delay.className = "text-gray-500 text-sm mb-2";
@@ -484,13 +408,11 @@ function renderBoutique(products) {
       card.appendChild(delay);
     }
 
-    // === (7) Prix ===
     const price = document.createElement("p");
     price.className = "text-[#f3988b] font-bold mb-3";
     price.textContent = (product.price || 0).toFixed(2) + " €";
     card.appendChild(price);
 
-    // === Bouton ===
     const btn = document.createElement("button");
     btn.className =
       "mt-auto bg-[#f3988b] hover:scale-95 transition text-white px-4 py-2 rounded-xl";
@@ -501,10 +423,8 @@ function renderBoutique(products) {
     container.appendChild(card);
   });
 
-  // ⚠️ très important : initialiser les carrousels APRÈS rendu
   initAllCarousels();
 
-  // si on arrive avec une ancre (#p-xxx), scroll doux + petit highlight
   const hash = location.hash.slice(1);
   if (hash) {
     const target = document.getElementById(hash);
@@ -519,81 +439,92 @@ function renderBoutique(products) {
   }
 }
 
-/**
- * Affiche les éléments du panier sur la page panier avec les totaux et les
- * boutons de suppression.
- */
 function renderCartPage(products) {
   const container = document.getElementById("cart-container");
   if (!container) return;
   container.innerHTML = "";
+
   const cart = loadCart();
   if (cart.length === 0) {
     container.innerHTML = '<p class="text-gray-600">Votre panier est vide.</p>';
     return;
   }
+
   let total = 0;
+
   cart.forEach((item) => {
     const product = products.find((p) => p.id === item.id);
     if (!product) return;
+
     const row = document.createElement("div");
     row.className =
       "flex flex-col sm:flex-row items-start sm:items-center justify-between border-b py-4";
+
     const info = document.createElement("div");
     info.className = "flex items-center gap-4";
+
     const img = document.createElement("img");
     img.className = "w-20 h-20 object-cover rounded";
     img.src = product.images[0] || "";
     img.alt = product.name;
+
     const details = document.createElement("div");
-    details.innerHTML = `<h3 class="font-semibold text-lg">${
-      product.name
-    }</h3><p class="text-sm text-gray-500">${product.price.toFixed(2)} € x ${
-      item.qty
-    }</p>`;
+    details.innerHTML = `<h3 class="font-semibold text-lg">${product.name}</h3>
+                         <p class="text-sm text-gray-500">${product.price.toFixed(
+                           2
+                         )} € x ${item.qty}</p>`;
+
     info.appendChild(img);
     info.appendChild(details);
+
     const actions = document.createElement("div");
     actions.className = "flex items-center gap-2 mt-2 sm:mt-0";
+
     const qty = document.createElement("span");
     qty.className = "px-2 py-1 border rounded";
     qty.textContent = item.qty;
+
     const minusBtn = document.createElement("button");
-    minusBtn.className = "px-2 py-1 bg-gray-200 rounded hover:bg-gray-300";
-    minusBtn.textContent = "-";
     minusBtn.addEventListener("click", () => {
       removeFromCart(item.id);
-      // recalculer l’affichage
       renderCartPage(products);
+      renderNotePreview(products);
+      mountPayPalButtons(products);
     });
+
     const plusBtn = document.createElement("button");
-    plusBtn.className = "px-2 py-1 bg-gray-200 rounded hover:bg-gray-300";
-    plusBtn.textContent = "+";
     plusBtn.addEventListener("click", () => {
       addToCart(item.id);
       renderCartPage(products);
+      renderNotePreview(products);
+      mountPayPalButtons(products);
     });
+
     actions.appendChild(minusBtn);
     actions.appendChild(qty);
     actions.appendChild(plusBtn);
+
     const subtotal = product.price * item.qty;
     total += subtotal;
+
     const subtotalElem = document.createElement("div");
     subtotalElem.className = "text-[#85ccd5] font-bold mt-2 sm:mt-0";
-    subtotalElem.textContent = subtotal.toFixed(2) + " €";
+    subtotalElem.textContent = subtotal.toFixed(2) + " €";
+
     row.appendChild(info);
     row.appendChild(actions);
     row.appendChild(subtotalElem);
     container.appendChild(row);
   });
-  // total final
+
   const totalElem = document.createElement("div");
   totalElem.className = "text-right mt-4 font-bold text-xl [#85ccd5]";
-  totalElem.textContent = "Total : " + total.toFixed(2) + " €";
+  totalElem.textContent = "Total : " + total.toFixed(2) + " €";
   container.appendChild(totalElem);
 }
 
-// Carousel
+/* ===================== CARROUSEL ===================== */
+
 function initCarousel(root) {
   const track = root.querySelector("[data-track]");
   if (!track) return;
@@ -603,7 +534,6 @@ function initCarousel(root) {
   const dotsWrap = root.querySelector("[data-dots]");
   let index = 0;
 
-  // dots
   if (dotsWrap) {
     slides.forEach((_, i) => {
       const b = document.createElement("button");
@@ -635,7 +565,6 @@ function initCarousel(root) {
   prev?.addEventListener("click", () => goTo(index - 1));
   next?.addEventListener("click", () => goTo(index + 1));
 
-  // Swipe (touch)
   let startX = 0,
     dx = 0,
     touching = false;
@@ -656,9 +585,7 @@ function initCarousel(root) {
     { passive: true }
   );
   track.addEventListener("touchend", () => {
-    if (Math.abs(dx) > 40) {
-      dx < 0 ? goTo(index + 1) : goTo(index - 1);
-    }
+    if (Math.abs(dx) > 40) dx < 0 ? goTo(index + 1) : goTo(index - 1);
     dx = 0;
     touching = false;
   });
@@ -670,19 +597,17 @@ function initAllCarousels() {
   document.querySelectorAll("[data-carousel]").forEach(initCarousel);
 }
 
-// Compteur caractères
+/* ===================== FORMULAIRE CONTACT ===================== */
+
 (function () {
   const ta = document.getElementById("message");
   const out = document.getElementById("msg-count");
   if (!ta || !out) return;
-  const update = () => {
-    out.textContent = String(ta.value.length);
-  };
+  const update = () => (out.textContent = String(ta.value.length));
   ta.addEventListener("input", update);
   update();
 })();
 
-// Envoi AJAX vers Formspree (sans rechargement)
 (function () {
   const form = document.getElementById("contact-form");
   const btn = document.getElementById("contact-submit");
@@ -697,11 +622,7 @@ function initAllCarousels() {
     btn.classList.add("opacity-60", "cursor-not-allowed");
 
     try {
-      // 👇 Sauvegarde les préférences du formulaire dans localStorage
-      savePrefsFromContactForm();
-
       const formData = new FormData(form);
-      // Indique à Formspree qu'on veut une réponse JSON
       const res = await fetch(form.action, {
         method: "POST",
         headers: { Accept: "application/json" },
@@ -721,7 +642,7 @@ function initAllCarousels() {
         fb.className =
           "mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2";
       }
-    } catch (err) {
+    } catch {
       fb.textContent = "Erreur réseau. Vérifiez votre connexion et réessayez.";
       fb.className =
         "mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2";
@@ -732,26 +653,42 @@ function initAllCarousels() {
   });
 })();
 
-/* ===================== PAYPAL – HELPERS ===================== */
+/* ===================== PAYPAL ===================== */
 
-// Construit les produits du panier au format PayPal (à partir de ton localStorage)
-function buildPayPalItems(products) {
+/** Construit la charge utile items pour le serveur (id + quantity) */
+function buildPayPalItemsFromCart() {
   const cart = loadCart();
-  return cart
-    .map((it) => {
-      const p = products.find((x) => x.id === it.id);
-      if (!p) return null;
-      return {
-        id: String(p.id),
-        name: (p.name || "Article").substring(0, 127),
-        quantity: String(it.qty),
-        // IMPORTANT : on n’enverra pas le prix final signé ici au serveur (le serveur recalculera)
-      };
-    })
-    .filter(Boolean);
+  return cart.map((it) => ({
+    id: String(it.id),
+    quantity: Math.max(1, Number(it.qty) || 1),
+  }));
 }
 
-// Montre un aperçu “note” (facultatif)
+/** Helpers pour appeler tes routes Vercel */
+async function createOrderOnServer(items) {
+  const res = await fetch(`${API_BASE}/api/create-order`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ items }),
+  });
+  if (!res.ok)
+    throw new Error(`create-order ${res.status} ${await res.text()}`);
+  const data = await res.json();
+  return data.id; // orderID PayPal
+}
+
+async function captureOrderOnServer(orderID) {
+  const res = await fetch(`${API_BASE}/api/capture-order`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ orderID }),
+  });
+  if (!res.ok)
+    throw new Error(`capture-order ${res.status} ${await res.text()}`);
+  return res.json();
+}
+
+/** Affiche une petite note récap dans la zone PayPal (facultatif) */
 function renderNotePreview(products) {
   const zone = document.getElementById("paypal-zone");
   if (!zone) return;
@@ -781,14 +718,15 @@ function renderNotePreview(products) {
   zone.appendChild(wrap);
 }
 
-// Monte le bouton PayPal en s’appuyant sur tes endpoints backend
+/** Monte le bouton PayPal (une seule fois) */
 async function mountPayPalButtons(products) {
   const zone = document.getElementById("paypal-button-container");
   if (!zone) return;
-  if (!window.paypal) return; // on attend le SDK (événement paypalLoaded)
-  const cart = loadCart();
+  if (!window.paypal) return;
+
   zone.innerHTML = "";
 
+  const cart = loadCart();
   if (!cart.length) {
     const p = document.createElement("p");
     p.className = "text-sm text-gray-600";
@@ -797,39 +735,18 @@ async function mountPayPalButtons(products) {
     return;
   }
 
-  const items = buildPayPalItems(products);
+  const items = buildPayPalItemsFromCart();
 
   window.paypal
     .Buttons({
       style: { layout: "vertical", shape: "pill", label: "paypal" },
 
-      // FRONT -> BACK : crée l’ordre côté serveur (ton Secret est côté serveur)
       createOrder: async () => {
-        const res = await fetch("/api/create-order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ items }), // on envoie juste id + qty, le serveur sécurise prix/total
-        });
-        const data = await res.json();
-        if (!res.ok || !data.id)
-          throw new Error(data.error || "create-order failed");
-        return data.id;
+        return await createOrderOnServer(items);
       },
 
-      // FRONT -> BACK : capture côté serveur (reco)
-      onApprove: async (data) => {
-        const res = await fetch("/api/capture-order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orderID: data.orderID }),
-        });
-        const out = await res.json();
-        if (!res.ok) {
-          console.error("Capture failed:", out);
-          alert("Paiement refusé / annulé.");
-          return;
-        }
-        // Succès : on vide le panier et on redirige
+      onApprove: async ({ orderID }) => {
+        await captureOrderOnServer(orderID);
         saveCart([]);
         updateCartCount();
         location.href = "merci.html";
@@ -843,77 +760,8 @@ async function mountPayPalButtons(products) {
     .render("#paypal-button-container");
 }
 
-const API_BASE = "https://emycrochet.vercel.app"; // <- remplace
+/* ===================== BOOTSTRAP PAGES ===================== */
 
-async function createOrderOnServer(items) {
-  const res = await fetch(`${API_BASE}/api/create-order`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ items }),
-  });
-  if (!res.ok)
-    throw new Error(`create-order ${res.status} ${await res.text()}`);
-  const data = await res.json();
-  return data.id;
-}
-
-async function captureOrderOnServer(orderID) {
-  const res = await fetch(`${API_BASE}/api/capture-order`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ orderID }),
-  });
-  if (!res.ok)
-    throw new Error(`capture-order ${res.status} ${await res.text()}`);
-  return res.json();
-}
-
-// TODO: adapte cette fonction à ton panier.
-// Ici un exemple très simple qui regarde des éléments DOM .cart-item
-function getCartItems() {
-  // Exemple: <div class="cart-item" data-id="P001" data-qty="2"></div>
-  const nodes = document.querySelectorAll(".cart-item");
-  const items = [];
-  nodes.forEach((n) => {
-    const id = n.getAttribute("data-id");
-    const quantity = parseInt(n.getAttribute("data-qty"), 10) || 1;
-    if (id) items.push({ id, quantity });
-  });
-  return items;
-}
-
-// Attendre que le SDK soit chargé (si script en defer)
-window.addEventListener("load", () => {
-  if (!window.paypal) {
-    console.error("PayPal SDK non chargé");
-    return;
-  }
-
-  paypal
-    .Buttons({
-      style: { layout: "vertical", color: "gold", shape: "pill" },
-
-      createOrder: async () => {
-        const items = getCartItems(); // [{id, quantity}, ...]
-        if (!items.length) throw new Error("Panier vide");
-        return await createOrderOnServer(items); // retourne l’orderID
-      },
-
-      onApprove: async ({ orderID }) => {
-        const capture = await captureOrderOnServer(orderID);
-        console.log("Capture OK:", capture);
-        // success UI: vider panier, redirection, message de succès, etc.
-      },
-
-      onError: (err) => {
-        console.error("PayPal error:", err);
-        alert("Une erreur est survenue pendant le paiement.");
-      },
-    })
-    .render("#paypal-button-container");
-});
-
-// Au chargement de la page, on met à jour le compteur du panier.
 document.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
   const page = document.body.dataset.page;
@@ -925,17 +773,16 @@ document.addEventListener("DOMContentLoaded", () => {
       renderBoutique(products);
     } else if (page === "cart") {
       renderCartPage(products);
-      renderNotePreview(products); // 👈 petit aperçu
-      window.__lastProducts = products; // 👈 on garde pour onload du SDK
+      renderNotePreview(products);
+      window.__lastProducts = products;
 
       if (window.paypal) {
         mountPayPalButtons(products);
       } else {
+        // Déclenché par l'attribut onload du script PayPal dans panier.html
         window.addEventListener(
           "paypalLoaded",
-          () => {
-            mountPayPalButtons(products);
-          },
+          () => mountPayPalButtons(products),
           { once: true }
         );
       }
