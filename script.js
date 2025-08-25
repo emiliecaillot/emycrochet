@@ -485,6 +485,11 @@ function renderCartPage(products) {
     qty.textContent = item.qty;
 
     const minusBtn = document.createElement("button");
+    minusBtn.type = "button";
+    minusBtn.className =
+      "px-2.5 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700";
+    minusBtn.setAttribute("aria-label", "Retirer 1");
+    minusBtn.textContent = "−";
     minusBtn.addEventListener("click", () => {
       removeFromCart(item.id);
       renderCartPage(products);
@@ -493,6 +498,11 @@ function renderCartPage(products) {
     });
 
     const plusBtn = document.createElement("button");
+    plusBtn.type = "button";
+    plusBtn.className =
+      "px-2.5 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700";
+    plusBtn.setAttribute("aria-label", "Ajouter 1");
+    plusBtn.textContent = "+";
     plusBtn.addEventListener("click", () => {
       addToCart(item.id);
       renderCartPage(products);
@@ -521,6 +531,25 @@ function renderCartPage(products) {
   totalElem.className = "text-right mt-4 font-bold text-xl [#85ccd5]";
   totalElem.textContent = "Total : " + total.toFixed(2) + " €";
   container.appendChild(totalElem);
+  // Bouton "Vider le panier"
+  const clearWrap = document.createElement("div");
+  clearWrap.className = "mt-3 flex justify-end";
+
+  const clearBtn = document.createElement("button");
+  clearBtn.type = "button";
+  clearBtn.className =
+    "px-4 py-2 rounded-xl bg-red-500/50 text-white hover:bg-red-500 cursor-pointer";
+  clearBtn.textContent = "Vider le panier";
+  clearBtn.addEventListener("click", () => {
+    saveCart([]);
+    updateCartCount();
+    renderCartPage(products);
+    renderNotePreview(products);
+    mountPayPalButtons(products);
+  });
+
+  clearWrap.appendChild(clearBtn);
+  container.appendChild(clearWrap);
 }
 
 /* ===================== CARROUSEL ===================== */

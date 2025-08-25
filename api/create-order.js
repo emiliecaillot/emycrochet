@@ -100,6 +100,12 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         intent: "CAPTURE",
+        application_context: {
+          landing_page: "LOGIN", // force l’onglet connexion d’abord
+          user_action: "PAY_NOW", // bouton “Payer maintenant”
+          brand_name: "Emy’Crochet", // libellé marchand
+          locale: "fr-FR",
+        },
         purchase_units: [
           {
             amount: {
