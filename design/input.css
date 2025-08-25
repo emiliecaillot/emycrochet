@@ -1,0 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Gabriela&family=Sen:wght@400..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap");
+
+@import "tailwindcss";
+
+/* Couleurs personnalisées (rose pour la marque) */
+@theme {
+  --font-gabriela: "Gabriela", "serif";
+  --font-sen: "Sen", "sans-serif";
+  --font-roboto: "Roboto Slab", "serif";
+  --color-darkblue: #338896;
+  --color-blue: #85ccd5;
+  --color-sky: #c3e5f2;
+  --color-salmon: #f3988b;
+  --color-cream: #fcd7bd;
+  --color-txt: #4b4c46;
+}
+
+.links-header {
+  @apply text-txt hover:scale-95 hover:text-salmon transition flex items-center gap-1;
+}
+.links-footer {
+  @apply hover:text-salmon font-light;
+}

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Favicons -->
+    <link
+      rel="icon"
+      type="image/webp"
+      size="32x32"
+      href="images/logopastill.webp"
+    />
+    <link
+      rel="shortcut icon"
+      type="image/webp"
+      href="images/logopastill.webp"
+    />
+    <link
+      rel="apple-touch-icon"
+      type="image/webp"
+      href="images/logopastill.webp"
+    />
+    <title>À propos – Emy’Crochet</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="font-sans bg-gray-50" data-page="about">
+    <!-- En‑tête -->
+    <header class="bg-white/50 shadow-md fixed top-0 left-0 right-0 z-50">
+      <div
+        class="container mx-auto flex items-center justify-between px-4 py-3"
+      >
+        <a
+          href="index.html"
+          class="flex items-center gap-2 text-xl font-bold text-pink-600"
+        >
+          <!-- Logo  -->
+          <img src="images/logotxtsbg.jpg" class="w-16 h-16 flex mx-auto" />
+        </a>
+        <nav class="flex items-center space-x-6">
+          <a href="index.html" class="links-header">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5 text-salmon"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <!-- Home icon -->
+              <path
+                d="M11.47 3.841a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 1 0 1.06-1.061l-8.689-8.69a2.25 2.25 0 0 0-3.182 0l-8.69 8.69a.75.75 0 1 0 1.061 1.06l8.69-8.689Z"
+              />
+              <path
+                d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z"
+              />
+            </svg>
+            <span class="hidden sm:inline">Accueil</span>
+          </a>
+          <a href="boutique.html" class="links-header">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5 text-salmon"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <!-- Shopping bag icon -->
+              <path
+                fill-rule="evenodd"
+                d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.865 1.679l-1.263 12A1.875 1.875 0 0 0 4.25 22.5h15.5a1.875 1.875 0 0 0 1.865-2.071l-1.263-12a1.875 1.875 0 0 0-1.865-1.679H16.5V6a4.5 4.5 0 1 0-9 0ZM12 3a3 3 0 0 0-3 3v.75h6V6a3 3 0 0 0-3-3Zm-3 8.25a3 3 0 1 0 6 0v-.75a.75.75 0 0 1 1.5 0v.75a4.5 4.5 0 1 1-9 0v-.75a.75.75 0 0 1 1.5 0v.75Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span class="hidden sm:inline">Boutique</span>
+          </a>
+          <a href="a-propos.html" class="links-header">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5 text-salmon"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <!-- Information icon -->
+              <path
+                fill-rule="evenodd"
+                d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span class="hidden sm:inline">À propos</span>
+          </a>
+          <a href="contact.html" class="links-header">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5 text-salmon"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <!-- Envelope icon -->
+              <path
+                d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z"
+              />
+              <path
+                d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z"
+              />
+            </svg>
+            <span class="hidden sm:inline">Contact</span>
+          </a>
+        </nav>
+        <!-- Panier -->
+        <a href="panier.html" class="relative links-header">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <!-- Shopping cart icon -->
+            <path
+              d="M2.25 2.25a.75.75 0 0 0 0 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 0 0-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 0 0 0-1.5H5.378A2.25 2.25 0 0 1 7.5 15h11.218a.75.75 0 0 0 .674-.421 60.358 60.358 0 0 0 2.96-7.228.75.75 0 0 0-.525-.965A60.864 60.864 0 0 0 5.68 4.509l-.232-.867A1.875 1.875 0 0 0 3.636 2.25H2.25ZM3.75 20.25a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM16.5 20.25a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z"
+            />
+          </svg>
+          <span
+            class="cart-count absolute -top-2 -right-3 bg-salmon text-white text-xs rounded-full w-5 h-5 flex items-center justify-center invisible"
+            >0</span
+          >
+        </a>
+      </div>
+    </header>
+
+    <main class="pt-24 pb-12 px-4 md:px-8">
+      <section
+        class="relative h-[26rem] md:h-[32rem] flex items-center justify-center text-center text-white bg-fixed bg-center bg-cover"
+        style="background-image: url('images/yarnbann.jpg')"
+      >
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="relative z-10 px-4">
+          <p
+            class="uppercase tracking-widest text-sm md:text-base text-white/80"
+          >
+            Fait main en Bretagne
+          </p>
+          <h1 class="text-4xl md:text-6xl font-extrabold mb-3">
+            À propos d’Emy’Crochet
+          </h1>
+          <p class="text-base md:text-xl max-w-2xl mx-auto text-white/90">
+            Des pièces uniques, simples, chaleureuses et accessibles.
+          </p>
+        </div>
+      </section>
+
+      <section
+        class="max-w-6xl mx-auto px-4 md:px-8 py-12 grid md:grid-cols-2 gap-10 items-center"
+      >
+        <div class="order-2 md:order-1">
+          <h2 class="text-2xl md:text-3xl font-bold mb-3">
+            Bonjour, moi c’est Emilie <span class="text-salmon">♥</span>
+          </h2>
+          <p class="text-txt leading-relaxed mb-4">
+            Je crée des <strong>amigurumis</strong>, hochets et accessoires au
+            crochet depuis Fréhel (Côtes-d’Armor). Chaque pièce est
+            <strong>entièrement faite main</strong>, avec des matériaux choisis
+            et beaucoup d’amour.
+          </p>
+          <ul class="space-y-2 text-txt">
+            <li class="flex items-start gap-3">
+              <span
+                class="mt-1 inline-block w-2.5 h-2.5 rounded-full bg-salmon"
+              ></span>
+              Personnalisations possibles (couleurs, tailles, accessoires)
+            </li>
+
+            <li class="flex items-start gap-3">
+              <span
+                class="mt-1 inline-block w-2.5 h-2.5 rounded-full bg-salmon"
+              ></span>
+              Confection responsable, en petites séries
+            </li>
+          </ul>
+
+          <div class="mt-6 flex flex-wrap items-center gap-3">
+            <span
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cream/40 text-txt text-sm"
+            >
+              🇫🇷 Confection locale
+            </span>
+            <span
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue/40 text-darkblue text-sm"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M4 13v8h7v-8zm8 0v8h7v-8zm8 0v9H3v-9H2V7h3.04L5 6.5A3.5 3.5 0 0 1 8.5 3c1.27 0 2.39.68 3 1.7c.61-1.02 1.73-1.7 3-1.7A3.5 3.5 0 0 1 18 6.5l-.04.5H21v6zM3 8v4h8V8zm17 4V8h-8v4zm-3.05-5l.05-.5A2.5 2.5 0 0 0 14.5 4A2.5 2.5 0 0 0 12 6.5V7zM11 7v-.5A2.5 2.5 0 0 0 8.5 4A2.5 2.5 0 0 0 6 6.5l.05.5z"
+                />
+              </svg>
+              Idée cadeau
+            </span>
+          </div>
+        </div>
+
+        <div class="order-1 md:order-2">
+          <div class="relative">
+            <img
+              src="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/atelier.jpg"
+              alt="Atelier Emy’Crochet"
+              class="w-full aspect-[4/5] object-cover rounded-2xl shadow"
+            />
+            <div
+              class="absolute -bottom-4 -right-4 bg-white rounded-xl shadow px-4 py-3"
+            >
+              <p class="text-sm text-gray-600">Depuis 2024</p>
+              <p class="text-lg font-semibold">100+ pièces réalisées</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-white">
+        <div
+          class="max-w-6xl mx-auto px-4 md:px-8 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
+          <div class="p-5 rounded-xl border hover:shadow transition">
+            <div class="text-2xl">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                class="text-darkblue"
+              >
+                <path
+                  fill="currentColor"
+                  d="M12.86 10.44L11 6.06l-1.86 4.39l-4.75.41L8 14l-1.08 4.63L11 16.17l4.09 2.46L14 14l3.61-3.14zm3.73 10.26L11 17.34L5.42 20.7l1.46-6.35l-4.92-4.28l6.49-.57l2.55-6l2.55 6l6.49.57l-4.92 4.27z"
+                />
+              </svg>
+            </div>
+            <h3 class="font-semibold mt-2 mb-1">Unique & personnalisable</h3>
+            <p class="text-gray-600 text-sm">
+              Chaque création est faite pour vous, pas pour l’entrepôt.
+            </p>
+          </div>
+          <div class="p-5 rounded-xl border hover:shadow transition">
+            <div class="text-2xl">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                class="text-darkblue"
+              >
+                <g fill="none">
+                  <path
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    d="M16 4c2.175.012 3.353.109 4.121.877C21 5.756 21 7.17 21 9.998v6c0 2.829 0 4.243-.879 5.122c-.878.878-2.293.878-5.121.878H9c-2.828 0-4.243 0-5.121-.878C3 20.24 3 18.827 3 15.998v-6c0-2.828 0-4.242.879-5.121C4.647 4.109 5.825 4.012 8 4"
+                  />
+                  <path
+                    fill="currentColor"
+                    d="m12 11.691l-.519.542a.75.75 0 0 0 1.038 0zm0 4.137v-.75zm-.514-1.067c-.417-.307-.878-.69-1.227-1.093c-.368-.426-.509-.757-.509-.971h-1.5c0 .77.441 1.45.875 1.952c.453.525 1.014.984 1.474 1.321zM9.75 12.697c0-.576.263-.827.492-.907c.25-.088.714-.06 1.24.443l1.037-1.083c-.825-.79-1.861-1.096-2.773-.776c-.934.327-1.496 1.226-1.496 2.323zm3.65 3.273c.46-.337 1.022-.796 1.475-1.32c.434-.502.875-1.183.875-1.953h-1.5c0 .214-.141.545-.51.971c-.348.403-.809.786-1.226 1.093zm2.35-3.273c0-1.097-.562-1.996-1.496-2.323c-.912-.32-1.948-.014-2.773.776l1.038 1.083c.525-.503.989-.531 1.24-.443c.228.08.491.33.491.907zM10.6 15.97c.368.27.782.607 1.4.608v-1.5c-.024 0-.04 0-.094-.03a4 4 0 0 1-.42-.287zm1.914-1.21a4 4 0 0 1-.42.289c-.054.029-.07.029-.094.029v1.5c.618 0 1.032-.337 1.4-.608z"
+                  />
+                  <path
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    d="M8 3.5A1.5 1.5 0 0 1 9.5 2h5A1.5 1.5 0 0 1 16 3.5v1A1.5 1.5 0 0 1 14.5 6h-5A1.5 1.5 0 0 1 8 4.5z"
+                  />
+                </g>
+              </svg>
+            </div>
+            <h3 class="font-semibold mt-2 mb-1">Matériaux choisis</h3>
+            <p class="text-gray-600 text-sm">Fils doux, lavables.</p>
+          </div>
+          <div class="p-5 rounded-xl border hover:shadow transition">
+            <div class="text-2xl">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                class="text-darkblue"
+              >
+                <g fill="none">
+                  <path
+                    fill="currentColor"
+                    d="m10.15 8.802l-.442.606zM12 3.106l-.508.552a.75.75 0 0 0 1.015 0zm1.85 5.696l.442.606zM12 9.676v.75zm-1.408-1.48c-.69-.503-1.427-1.115-1.983-1.76c-.574-.665-.859-1.254-.859-1.721h-1.5c0 1.017.578 1.954 1.223 2.701c.663.768 1.501 1.457 2.235 1.992zM7.75 4.715c0-1.059.52-1.663 1.146-1.873c.652-.22 1.624-.078 2.596.816l1.015-1.104C11.23 1.38 9.704.988 8.418 1.42C7.105 1.862 6.25 3.096 6.25 4.715zm6.542 4.693c.734-.534 1.572-1.224 2.235-1.992c.645-.747 1.223-1.684 1.223-2.701h-1.5c0 .467-.284 1.056-.859 1.721c-.556.645-1.292 1.257-1.982 1.76zm3.458-4.693c0-1.619-.855-2.853-2.167-3.295c-1.286-.432-2.813-.04-4.09 1.134l1.015 1.104c.972-.894 1.945-1.036 2.597-.816c.625.21 1.145.814 1.145 1.873zM9.708 9.408c.755.55 1.354 1.018 2.292 1.018v-1.5c-.365 0-.565-.115-1.408-.73zm3.7-1.212c-.843.615-1.043.73-1.408.73v1.5c.938 0 1.537-.467 2.292-1.018z"
+                  />
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-width="1.5"
+                    d="M5 20.388h2.26c1.01 0 2.033.106 3.016.308a14.9 14.9 0 0 0 5.33.118c.868-.14 1.72-.355 2.492-.727c.696-.337 1.549-.81 2.122-1.341c.572-.53 1.168-1.397 1.59-2.075c.364-.582.188-1.295-.386-1.728a1.89 1.89 0 0 0-2.22 0l-1.807 1.365c-.7.53-1.465 1.017-2.376 1.162q-.165.026-.345.047m0 0l-.11.012m.11-.012a1 1 0 0 0 .427-.24a1.49 1.49 0 0 0 .126-2.134a1.9 1.9 0 0 0-.45-.367c-2.797-1.669-7.15-.398-9.779 1.467m9.676 1.274a.5.5 0 0 1-.11.012m0 0a9.3 9.3 0 0 1-1.814.004"
+                  />
+                  <rect
+                    width="3"
+                    height="8"
+                    x="2"
+                    y="14"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    rx="1.5"
+                  />
+                </g>
+              </svg>
+            </div>
+            <h3 class="font-semibold mt-2 mb-1">Fait main</h3>
+            <p class="text-gray-600 text-sm">
+              Du premier nœud au dernier, tout est réalisé à la main.
+            </p>
+          </div>
+          <div class="p-5 rounded-xl border hover:shadow transition">
+            <div class="text-2xl">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                class="text-darkblue"
+              >
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-width="1.5"
+                  d="m15.578 3.382l2 1.05c2.151 1.129 3.227 1.693 3.825 2.708C22 8.154 22 9.417 22 11.942v.117c0 2.524 0 3.787-.597 4.801c-.598 1.015-1.674 1.58-3.825 2.709l-2 1.049C13.822 21.539 12.944 22 12 22s-1.822-.46-3.578-1.382l-2-1.05c-2.151-1.129-3.227-1.693-3.825-2.708C2 15.846 2 14.583 2 12.06v-.117c0-2.525 0-3.788.597-4.802c.598-1.015 1.674-1.58 3.825-2.708l2-1.05C10.178 2.461 11.056 2 12 2s1.822.46 3.578 1.382ZM21 7.5l-4 2M12 12L3 7.5m9 4.5v9.5m0-9.5l4.5-2.25l.5-.25m0 0V13m0-3.5l-9.5-5"
+                />
+              </svg>
+            </div>
+            <h3 class="font-semibold mt-2 mb-1">Soin de l’envoi</h3>
+            <p class="text-gray-600 text-sm">Emballage soigné, suivi.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Comment ça se passe -->
+      <section class="max-w-6xl mx-auto px-4 md:px-8 py-12">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6">
+          Comment ça se passe ?
+        </h2>
+        <ol class="relative border-s pl-6 space-y-8">
+          <li>
+            <div
+              class="absolute -left-2 top-0 w-4 h-4 rounded-full bg-darkblue"
+            ></div>
+            <h4 class="font-semibold">1. Choisissez votre création</h4>
+            <p class="text-gray-600 text-sm">
+              Depuis la boutique, avec taille/couleurs/option.
+            </p>
+          </li>
+          <li>
+            <div
+              class="absolute -left-2 w-4 h-4 rounded-full bg-darkblue"
+            ></div>
+            <h4 class="font-semibold">2. Confection sur commande</h4>
+            <p class="text-gray-600 text-sm">
+              Je crochette sous 3–5 jours ouvrés (délai indiqué sur la fiche).
+            </p>
+          </li>
+          <li>
+            <div
+              class="absolute -left-2 w-4 h-4 rounded-full bg-darkblue"
+            ></div>
+            <h4 class="font-semibold">3. Envoi & suivi</h4>
+            <p class="text-gray-600 text-sm">
+              Colis protégé, numéro de suivi communiqué.
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Bloc Insta + CTA -->
+      <section class="max-w-6xl mx-auto px-4 md:px-8 py-12">
+        <div
+          class="rounded-2xl border p-6 md:p-8 bg-gradient-to-br from-pink-50 to-white"
+        >
+          <div class="flex flex-col md:flex-row items-center gap-6">
+            <div class="flex-1">
+              <h2 class="text-2xl md:text-3xl font-bold">
+                Suivez les coulisses sur Instagram
+              </h2>
+              <p class="text-txt mt-2">Réalisations en cours, nouveautés...</p>
+              <a
+                href="https://instagram.com/emy_crochet_22?igsh=MTRyYWR2YnZtM3UxdA%3D%3D&utm_source=qr"
+                target="_blank"
+                class="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-darkblue text-white hover:scale-[0.98] transition"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm5 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"
+                  />
+                </svg>
+                @emy_crochet_22
+              </a>
+            </div>
+            <div class="grid grid-cols-3 gap-2 w-full md:w-1/2">
+              <!-- Remplace par 3-6 visuels carrés (ou garde des placeholders) -->
+              <img
+                src="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/raiemantadouce1.JPG"
+                class="aspect-square object-cover rounded-lg"
+                alt="Emy Crochet 1"
+              />
+              <img
+                src="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/tortuemerdouce.JPG"
+                class="aspect-square object-cover rounded-lg"
+                alt="Emy Crochet 2"
+              />
+              <img
+                src="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/levre8.JPG"
+                class="aspect-square object-cover rounded-lg"
+                alt="Emy Crochet 3"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="max-w-4xl mx-auto px-4 md:px-8 py-12">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6">
+          Questions fréquentes
+        </h2>
+        <div class="space-y-3">
+          <details class="group rounded-xl border p-4">
+            <summary class="flex cursor-pointer items-center justify-between">
+              <span class="font-medium">Quels délais pour une commande ?</span>
+              <span class="transition group-open:rotate-180">⌄</span>
+            </summary>
+            <p class="mt-3 text-txt text-sm leading-relaxed">
+              En général
+              <strong>10–15&nbsp;jours ouvrés</strong>
+              (confection&nbsp;+&nbsp;envoi).<br />
+              Le délai <em>précis</em> est indiqué sur chaque fiche
+              produit.&nbsp;Le délai actuel de l’atelier est affiché en temps
+              réel sur la page Boutique (il peut varier si j’ai déjà des
+              commandes).
+            </p>
+          </details>
+          <details class="group rounded-xl border p-4">
+            <summary class="flex cursor-pointer items-center justify-between">
+              <span class="font-medium"
+                >Puis-je personnaliser les couleurs ?</span
+              >
+              <span class="transition group-open:rotate-180">⌄</span>
+            </summary>
+            <p class="mt-2 text-txt text-sm">
+              Oui ! Indiquez vos préférences ou écrivez-moi via la page Contact.
+            </p>
+          </details>
+          <details class="group rounded-xl border p-4">
+            <summary class="flex cursor-pointer items-center justify-between">
+              <span class="font-medium"
+                >Les créations sont-elles lavables en machine ?</span
+              >
+              <span class="transition group-open:rotate-180">⌄</span>
+            </summary>
+            <p class="mt-2 text-txt text-sm">
+              Pas tous, le mode de lavage est indiqué sur la fiche produit et
+              sera indiqué dans votre colis. Certains sont seulement lavable à
+              la main, car plus "fragile".
+            </p>
+          </details>
+        </div>
+      </section>
+    </main>
+    <!-- Pied de page -->
+    <footer class="bg-white border-t mt-12">
+      <div
+        class="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-8"
+      >
+        <!-- Logo & slogan -->
+        <div>
+          <a
+            href="index.html"
+            class="flex items-center gap-2 mb-2 text-pink-600 font-bold text-xl"
+          >
+            <img src="images/logotxtsbg.jpg" class="w-17 h-17 flex mx-auto" />
+          </a>
+          <p class="text-txt">
+            Des créations crochet faites avec amour et patience
+            <span class="text-salmon">♥</span>
+          </p>
+        </div>
+        <!-- Plan du site -->
+        <div>
+          <h3 class="font-semibold text-txt mb-2">Plan du site</h3>
+          <ul class="space-y-1 text-txt">
+            <li>
+              <a href="index.html" class="links-footer">Accueil</a>
+            </li>
+            <li>
+              <a href="boutique.html" class="links-footer">Boutique</a>
+            </li>
+            <li>
+              <a href="a-propos.html" class="links-footer">À propos</a>
+            </li>
+            <li>
+              <a href="contact.html" class="links-footer">Contact</a>
+            </li>
+            <li>
+              <a href="panier.html" class="links-footer">Panier</a>
+            </li>
+          </ul>
+        </div>
+        <!-- Contact -->
+        <div>
+          <h3 class="font-semibold text-txt mb-2">Contact</h3>
+          <p class="text-txt">
+            Pour toute question ou commande personnalisée :
+          </p>
+          <p class="text-txt">
+            <a href="mailto:emycrochet22@gmail.com" class="links-footer"
+              >emycrochet22@gmail.com</a
+            >
+          </p>
+          <!-- <p class="text-gray-600">
+            <a href="tel:+33787186436" class="hover:text-pink-500"
+              >+33 7 87 18 64 00</a
+            >
+          </p> -->
+          <!-- Instagram -->
+          <div class="mt-3 flex items-center gap-2">
+            <a
+              href="https://instagram.com/emy_crochet_22?igsh=MTRyYWR2YnZtM3UxdA%3D%3D&utm_source=qr"
+              target="_blank"
+              class="text-txt links-footer"
+              aria-label="Instagram"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                class="w-6 h-6 fill-current"
+              >
+                <path
+                  d="M349.33,69.33a93.62,93.62,0,0,1,93.34,93.34V349.33a93.62,93.62,0,0,1-93.34,93.34H162.67a93.62,93.62,0,0,1-93.34-93.34V162.67a93.62,93.62,0,0,1,93.34-93.34H349.33m0-37.33H162.67C90.8,32,32,90.8,32,162.67V349.33C32,421.2,90.8,480,162.67,480H349.33C421.2,480,480,421.2,480,349.33V162.67C480,90.8,421.2,32,349.33,32Z"
+                />
+                <path
+                  d="M377.33,162.67a28,28,0,1,1,28-28A27.94,27.94,0,0,1,377.33,162.67Z"
+                />
+                <path
+                  d="M256,181.33A74.67,74.67,0,1,1,181.33,256,74.75,74.75,0,0,1,256,181.33M256,144A112,112,0,1,0,368,256,112,112,0,0,0,256,144Z"
+                />
+              </svg>
+            </a>
+            <span class="text-txt">@emy_crochet_22</span>
+          </div>
+        </div>
+        <!-- Informations légales -->
+        <div>
+          <h3 class="font-semibold text-txt mb-2">Informations</h3>
+          <ul class="space-y-1 text-txt">
+            <li>
+              <a href="mentions-legales.html" class="links-footer"
+                >Mentions légales</a
+              >
+            </li>
+            <li>
+              <a href="mentions-legales.html#cgv" class="links-footer"
+                >Conditions générales</a
+              >
+            </li>
+            <li>
+              <a href="mentions-legales.html#retour" class="links-footer"
+                >Politique de retour</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="text-center text-txt text-sm py-4 border-t">
+        © <span id="year"></span> Emy’Crochet – Tous droits réservés. Développé
+        par
+        <a
+          href="https://emiliecaillot.github.io/Portfolio/"
+          target="_blank"
+          class="font-bold hover:underline"
+          >Emilie Caillot</a
+        >
+      </div>
+    </footer>
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>
