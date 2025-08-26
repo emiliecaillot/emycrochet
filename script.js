@@ -9,11 +9,12 @@
 
 /* ===================== CONFIG GÉNÉRALE ===================== */
 
+// Produits
 const csvUrl =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQi8LisKQjdMENRFQqMfnoWzipbBQOJwUOtT7qYuiSnLVWeS3w4KQ-WUcgjcqDpGpl0xZWF9RaCd2cv/pub?output=tsv";
+  "https://docs.google.com/spreadsheets/d/1EIVyYJHayAAoAwi7UxNiX5dPNOQCisBxmD6pVenz3OA/export?format=tsv&gid=0";
 
-/** Domaine déployé (Vercel) pour appeler l’API serverless */
-const API_BASE = window.location.origin || "https://emycrochet.vercel.app";
+// Utilise toujours le domaine Vercel où vivent tes fonctions serverless
+const API_BASE = "https://emycrochet.vercel.app";
 
 /* ===================== PRODUITS (Google Sheet) ===================== */
 
@@ -78,8 +79,9 @@ async function fetchProducts() {
 
 /* ===================== ATELIER – Bandeau délais dynamiques ===================== */
 
+// Bandeau atelier
 const BANNER_TSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpNDYq-318n7Kn_YcvIE0f3pWqb1tTaMQqQ1wV5I-fNjN3zP23Dmym_aDxGx6M4z8n3_Dc9WhMDUdB/pub?output=tsv";
+  "https://docs.google.com/spreadsheets/d/1KZliMVom1cloLWf4ejxw0SAkBD5l5qGiKEY8-W0Vx_M/export?format=tsv&gid=0";
 
 function showAtelierError(msg) {
   const wrap = document.getElementById("atelier-banner");
@@ -531,6 +533,7 @@ function renderCartPage(products) {
   totalElem.className = "text-right mt-4 font-bold text-xl [#85ccd5]";
   totalElem.textContent = "Total : " + total.toFixed(2) + " €";
   container.appendChild(totalElem);
+
   // Bouton "Vider le panier"
   const clearWrap = document.createElement("div");
   clearWrap.className = "mt-3 flex justify-end";
@@ -538,7 +541,7 @@ function renderCartPage(products) {
   const clearBtn = document.createElement("button");
   clearBtn.type = "button";
   clearBtn.className =
-    "px-4 py-2 rounded-xl bg-red-500/50 text-white hover:bg-red-500 cursor-pointer";
+    "px-4 py-2 rounded-xl bg-red-500/50 text-white hover:bg-red-500";
   clearBtn.textContent = "Vider le panier";
   clearBtn.addEventListener("click", () => {
     saveCart([]);

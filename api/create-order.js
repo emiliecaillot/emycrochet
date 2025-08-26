@@ -11,7 +11,7 @@ const PAYPAL_BASE =
 
 // Ton Google Sheet publié en TSV (colonnes: id | name | price)
 const CSV_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQi8LisKQjdMENRFQqMfnoWzipbBQOJwUOtT7qYuiSnLVWeS3w4KQ-WUcgjcqDpGpl0xZWF9RaCd2cv/pub?output=tsv";
+  "https://docs.google.com/spreadsheets/d/1EIVyYJHayAAoAwi7UxNiX5dPNOQCisBxmD6pVenz3OA/export?format=tsv&gid=0";
 
 export default async function handler(req, res) {
   // CORS pour appels depuis 127.0.0.1
