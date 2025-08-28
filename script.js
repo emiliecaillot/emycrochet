@@ -1,10 +1,18 @@
 /*
- * script.js – logique principale du site Emy’Crochet
+ * script.js – Version Vitrine (optimisée) pour Emy’Crochet
  *
- * - Récupération produits depuis Google Sheet (TSV)
- * - Panier via localStorage
- * - Rendus UI (home, boutique, panier)
- * - Intégration PayPal côté front : crée/capture l’ordre via tes routes Vercel
+ * ✅ Récupération produits depuis Google Sheet (TSV)
+ * ✅ Bandeau "Atelier" (délais dynamiques)
+ * ✅ Rendus UI (home, boutique) avec carrousel
+ * ✅ Formulaire de contact (envoi via form action)
+ * ✅ Lazy-loading des images (loading="lazy" + decoding="async")
+ * ✅ Carrousel paresseux : seule la 1re image charge immédiatement
+ * ✅ IntersectionObserver : promotion data-src → src quand la carte est visible
+ *
+ * ❌ Panier / localStorage
+ * ❌ Options payantes
+ * ❌ Livraison / Mondial Relay
+ * ❌ Paiement (PayPal)
  */
 
 /* ===================== CONFIG GÉNÉRALE ===================== */
@@ -13,17 +21,20 @@
 const csvUrl =
   "https://docs.google.com/spreadsheets/d/1EIVyYJHayAAoAwi7UxNiX5dPNOQCisBxmD6pVenz3OA/export?format=tsv&gid=0";
 
-// Utilise toujours le domaine Vercel où vivent tes fonctions serverless
-const API_BASE = "https://emycrochet.vercel.app";
+/* ===================== UTILITAIRES ===================== */
+
+function toBoolean(val) {
+  if (typeof val === "boolean") return val;
+  if (typeof val === "number") return val !== 0;
+  if (typeof val === "string") {
+    const lower = val.trim().toLowerCase();
+    return lower === "true" || lower === "yes" || lower === "1";
+  }
+  return false;
+}
 
 /* ===================== PRODUITS (Google Sheet) ===================== */
 
-/**
- * Récupère et parse les produits depuis un Google Sheet publié en TSV,
- * en se basant sur les NOMS de colonnes (casse insensible).
- * Colonnes attendues : id, name, description, size, option, price, images,
- * delay_min, delay_max, featured, active
- */
 async function fetchProducts() {
   const response = await fetch(csvUrl);
   const text = await response.text();
@@ -79,7 +90,6 @@ async function fetchProducts() {
 
 /* ===================== ATELIER – Bandeau délais dynamiques ===================== */
 
-// Bandeau atelier
 const BANNER_TSV_URL =
   "https://docs.google.com/spreadsheets/d/1KZliMVom1cloLWf4ejxw0SAkBD5l5qGiKEY8-W0Vx_M/export?format=tsv&gid=0";
 
@@ -200,87 +210,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-/* ===================== OUTILS GÉNÉRAUX ===================== */
-
-function toBoolean(val) {
-  if (typeof val === "boolean") return val;
-  if (typeof val === "number") return val !== 0;
-  if (typeof val === "string") {
-    const lower = val.trim().toLowerCase();
-    return lower === "true" || lower === "yes" || lower === "1";
-  }
-  return false;
-}
-
-/* ===================== PANIER (localStorage) ===================== */
-
-function loadCart() {
-  try {
-    const stored = localStorage.getItem("cart");
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveCart(cart) {
-  localStorage.setItem("cart", JSON.stringify(cart));
-}
-
-function addToCart(productId) {
-  const cart = loadCart();
-  const existing = cart.find((item) => item.id === productId);
-  if (existing) existing.qty += 1;
-  else cart.push({ id: productId, qty: 1 });
-  saveCart(cart);
-  updateCartCount();
-}
-
-function removeFromCart(productId) {
-  const cart = loadCart();
-  const idx = cart.findIndex((item) => item.id === productId);
-  if (idx > -1) {
-    if (cart[idx].qty > 1) cart[idx].qty -= 1;
-    else cart.splice(idx, 1);
-    saveCart(cart);
-    updateCartCount();
-  }
-}
-
-function updateCartCount() {
-  const countBubble = document.querySelector(".cart-count");
-  if (!countBubble) return;
-  const cart = loadCart();
-  const count = cart.reduce((sum, item) => sum + item.qty, 0);
-  countBubble.textContent = count;
-  if (count > 0) countBubble.classList.remove("invisible");
-  else countBubble.classList.add("invisible");
-}
-
-/* ===================== RENDUS UI ===================== */
+/* ===================== RENDUS UI (VITRINE) ===================== */
 
 function renderFeatured(products) {
   const container = document.getElementById("featured-container");
   if (!container) return;
   container.innerHTML = "";
 
-  let featured = products.filter((p) => p.active && p.featured).slice(0, 3);
+  const featured = products.filter((p) => p.active && p.featured).slice(0, 3);
 
   if (featured.length === 0) {
     container.innerHTML =
-      '<p class="text-gray-600">Aucun produit mis en avant pour le moment.</p>';
+      '<p class="text-gray-600">Aucune création mise en avant pour le moment.</p>';
     return;
   }
 
-  featured.forEach((product) => {
+  featured.forEach((product, idx) => {
     const card = document.createElement("div");
     card.className =
       "bg-white rounded-xl shadow hover:shadow-lg transition p-2 flex flex-col";
 
     const img = document.createElement("img");
     img.className = "w-96 h-96 object-cover rounded-xl mb-2";
-    img.src = product.images[0] || "";
     img.alt = product.name;
+    img.loading = "lazy";
+    img.decoding = "async";
+    // Si c'est la toute 1re image au-dessus du pli, tu peux donner une priorité :
+    // if (idx === 0) img.fetchPriority = "high";
+    img.src = product.images[0] || "";
 
     const title = document.createElement("h3");
     title.className = "font-semibold text-lg mb-1 text-txt";
@@ -288,17 +245,20 @@ function renderFeatured(products) {
 
     const price = document.createElement("p");
     price.className = "text-[#f3988b] font-bold mb-2";
-    price.textContent = product.price.toFixed(2) + " €";
+    price.textContent =
+      typeof product.price === "number" && !isNaN(product.price)
+        ? product.price.toFixed(2) + " €"
+        : "";
 
     const btn = document.createElement("a");
     btn.href = `boutique.html#p-${product.id}`;
     btn.className =
-      "mt-auto self-end inline-block px-3 py-1.5 text-sm rounded bg-[#f3988b] text-txt hover:scale-95 transition";
-    btn.textContent = "Voir";
+      "mt-auto self-end inline-block px-3 py-1.5 text-sm rounded bg-[#f3988b] text-white hover:scale-95 transition";
+    btn.textContent = "Voir la création";
 
     card.appendChild(img);
     card.appendChild(title);
-    card.appendChild(price);
+    if (price.textContent) card.appendChild(price);
     card.appendChild(btn);
     container.appendChild(card);
   });
@@ -313,7 +273,7 @@ function renderBoutique(products) {
 
   if (activeProducts.length === 0) {
     container.innerHTML =
-      '<p class="text-gray-600">Aucun produit disponible pour le moment.</p>';
+      '<p class="text-gray-600">Aucune création disponible pour le moment.</p>';
     return;
   }
 
@@ -323,6 +283,7 @@ function renderBoutique(products) {
       "bg-white rounded-lg shadow hover:shadow-lg transition p-4 flex flex-col";
     card.id = `p-${product.id}`;
 
+    // Carrousel multiple images – seule la 1re est chargée immédiatement
     if (product.images && product.images.length > 1) {
       const wrap = document.createElement("div");
       wrap.className = "relative overflow-hidden rounded mb-2";
@@ -335,10 +296,17 @@ function renderBoutique(products) {
 
       product.images.forEach((src, i) => {
         const img = document.createElement("img");
-        img.src = src;
         img.alt = `${product.name} ${i + 1}`;
         img.className =
           "w-full aspect-square object-cover flex-shrink-0 basis-full";
+        img.loading = "lazy";
+        img.decoding = "async";
+
+        if (i === 0) {
+          img.src = src; // charge seulement la première slide
+        } else {
+          img.dataset.src = src; // les autres seront promues plus tard
+        }
         track.appendChild(img);
       });
 
@@ -370,8 +338,10 @@ function renderBoutique(products) {
     } else {
       const img = document.createElement("img");
       img.className = "w-full aspect-square object-cover rounded mb-2";
-      img.src = product.images?.[0] || "";
       img.alt = product.name || "Création";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.src = product.images?.[0] || "";
       card.appendChild(img);
     }
 
@@ -410,23 +380,31 @@ function renderBoutique(products) {
       card.appendChild(delay);
     }
 
-    const price = document.createElement("p");
-    price.className = "text-[#f3988b] font-bold mb-3";
-    price.textContent = (product.price || 0).toFixed(2) + " €";
-    card.appendChild(price);
+    if (typeof product.price === "number" && !isNaN(product.price)) {
+      const price = document.createElement("p");
+      price.className = "text-[#338896] font-bold mb-3";
+      price.textContent = product.price.toFixed(2) + " €";
+      card.appendChild(price);
+    }
 
-    const btn = document.createElement("button");
-    btn.className =
-      "mt-auto bg-[#f3988b] hover:scale-95 transition text-white px-4 py-2 rounded-xl";
-    btn.textContent = "Ajouter au panier";
-    btn.addEventListener("click", () => addToCart(product.id));
-    card.appendChild(btn);
+    const ctaWrap = document.createElement("div");
+    ctaWrap.className = "mt-auto flex flex-wrap gap-2";
+    const contactBtn = document.createElement("a");
+    contactBtn.href = "contact.html";
+    contactBtn.className =
+      "inline-block bg-[#85ccd5] text-white px-4 py-2 rounded-xl hover:scale-95 transition";
+    contactBtn.textContent = "Prendre contact";
+    ctaWrap.appendChild(contactBtn);
+
+    card.appendChild(ctaWrap);
 
     container.appendChild(card);
   });
 
   initAllCarousels();
+  setupCardObserver(); // <-- charge les images data-src quand les cartes deviennent visibles
 
+  // Scroll vers un produit si hash présent
   const hash = location.hash.slice(1);
   if (hash) {
     const target = document.getElementById(hash);
@@ -439,120 +417,6 @@ function renderBoutique(products) {
       );
     }
   }
-}
-
-function renderCartPage(products) {
-  const container = document.getElementById("cart-container");
-  if (!container) return;
-  container.innerHTML = "";
-
-  const cart = loadCart();
-  if (cart.length === 0) {
-    container.innerHTML = '<p class="text-gray-600">Votre panier est vide.</p>';
-    return;
-  }
-
-  let total = 0;
-
-  cart.forEach((item) => {
-    const product = products.find((p) => p.id === item.id);
-    if (!product) return;
-
-    const row = document.createElement("div");
-    row.className =
-      "flex flex-col sm:flex-row items-start sm:items-center justify-between border-b py-4";
-
-    const info = document.createElement("div");
-    info.className = "flex items-center gap-4";
-
-    const img = document.createElement("img");
-    img.className = "w-20 h-20 object-cover rounded";
-    img.src = product.images[0] || "";
-    img.alt = product.name;
-
-    const details = document.createElement("div");
-    details.innerHTML = `<h3 class="font-semibold text-lg">${product.name}</h3>
-                         <p class="text-sm text-gray-500">${product.price.toFixed(
-                           2
-                         )} € x ${item.qty}</p>`;
-
-    info.appendChild(img);
-    info.appendChild(details);
-
-    const actions = document.createElement("div");
-    actions.className = "flex items-center gap-2 mt-2 sm:mt-0";
-
-    const qty = document.createElement("span");
-    qty.className = "px-2 py-1 border rounded";
-    qty.textContent = item.qty;
-
-    const minusBtn = document.createElement("button");
-    minusBtn.type = "button";
-    minusBtn.className =
-      "px-2.5 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700";
-    minusBtn.setAttribute("aria-label", "Retirer 1");
-    minusBtn.textContent = "−";
-    minusBtn.addEventListener("click", () => {
-      removeFromCart(item.id);
-      renderCartPage(products);
-      renderNotePreview(products);
-      mountPayPalButtons(products);
-    });
-
-    const plusBtn = document.createElement("button");
-    plusBtn.type = "button";
-    plusBtn.className =
-      "px-2.5 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700";
-    plusBtn.setAttribute("aria-label", "Ajouter 1");
-    plusBtn.textContent = "+";
-    plusBtn.addEventListener("click", () => {
-      addToCart(item.id);
-      renderCartPage(products);
-      renderNotePreview(products);
-      mountPayPalButtons(products);
-    });
-
-    actions.appendChild(minusBtn);
-    actions.appendChild(qty);
-    actions.appendChild(plusBtn);
-
-    const subtotal = product.price * item.qty;
-    total += subtotal;
-
-    const subtotalElem = document.createElement("div");
-    subtotalElem.className = "text-[#85ccd5] font-bold mt-2 sm:mt-0";
-    subtotalElem.textContent = subtotal.toFixed(2) + " €";
-
-    row.appendChild(info);
-    row.appendChild(actions);
-    row.appendChild(subtotalElem);
-    container.appendChild(row);
-  });
-
-  const totalElem = document.createElement("div");
-  totalElem.className = "text-right mt-4 font-bold text-xl [#85ccd5]";
-  totalElem.textContent = "Total : " + total.toFixed(2) + " €";
-  container.appendChild(totalElem);
-
-  // Bouton "Vider le panier"
-  const clearWrap = document.createElement("div");
-  clearWrap.className = "mt-3 flex justify-end";
-
-  const clearBtn = document.createElement("button");
-  clearBtn.type = "button";
-  clearBtn.className =
-    "px-4 py-2 rounded-xl bg-red-500/50 text-white hover:bg-red-500";
-  clearBtn.textContent = "Vider le panier";
-  clearBtn.addEventListener("click", () => {
-    saveCart([]);
-    updateCartCount();
-    renderCartPage(products);
-    renderNotePreview(products);
-    mountPayPalButtons(products);
-  });
-
-  clearWrap.appendChild(clearBtn);
-  container.appendChild(clearWrap);
 }
 
 /* ===================== CARROUSEL ===================== */
@@ -573,7 +437,10 @@ function initCarousel(root) {
       b.className =
         "w-2.5 h-2.5 rounded-full bg-white/70 border border-white/80 hover:bg-white focus:outline-none";
       b.setAttribute("aria-label", `Aller à l'image ${i + 1}`);
-      b.addEventListener("click", () => goTo(i));
+      b.addEventListener("click", () => {
+        goTo(i);
+        ensureSlideLoaded(i); // <-- garantit que la slide cliquée est chargée
+      });
       dotsWrap.appendChild(b);
     });
   }
@@ -589,14 +456,32 @@ function initCarousel(root) {
       });
     }
   }
+
   function goTo(i) {
     index = (i + slides.length) % slides.length;
     update();
   }
 
-  prev?.addEventListener("click", () => goTo(index - 1));
-  next?.addEventListener("click", () => goTo(index + 1));
+  function ensureSlideLoaded(i) {
+    const slide = slides[i];
+    if (!slide) return;
+    const img = slide.tagName === "IMG" ? slide : slide.querySelector("img");
+    if (img && img.dataset && img.dataset.src && !img.src) {
+      img.src = img.dataset.src;
+      img.removeAttribute("data-src");
+    }
+  }
 
+  prev?.addEventListener("click", () => {
+    goTo(index - 1);
+    ensureSlideLoaded(index); // charge la slide de destination si besoin
+  });
+  next?.addEventListener("click", () => {
+    goTo(index + 1);
+    ensureSlideLoaded(index);
+  });
+
+  // Évènements tactiles
   let startX = 0,
     dx = 0,
     touching = false;
@@ -617,7 +502,14 @@ function initCarousel(root) {
     { passive: true }
   );
   track.addEventListener("touchend", () => {
-    if (Math.abs(dx) > 40) dx < 0 ? goTo(index + 1) : goTo(index - 1);
+    if (Math.abs(dx) > 40) {
+      if (dx < 0) {
+        goTo(index + 1);
+      } else {
+        goTo(index - 1);
+      }
+      ensureSlideLoaded(index);
+    }
     dx = 0;
     touching = false;
   });
@@ -627,6 +519,36 @@ function initCarousel(root) {
 
 function initAllCarousels() {
   document.querySelectorAll("[data-carousel]").forEach(initCarousel);
+}
+
+/* ===================== LAZY PROMOTION & OBSERVER ===================== */
+
+function promoteLazyImgs(root) {
+  const imgs = root.querySelectorAll("img[data-src]");
+  imgs.forEach((img) => {
+    if (!img.src) img.src = img.dataset.src;
+    img.removeAttribute("data-src");
+  });
+}
+
+// Observe les cartes produits pour charger leurs images quand elles entrent dans le viewport
+function setupCardObserver() {
+  const cards = document.querySelectorAll("#boutique-container > div");
+  if (!("IntersectionObserver" in window) || !cards.length) return;
+
+  const io = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          promoteLazyImgs(entry.target);
+          obs.unobserve(entry.target);
+        }
+      });
+    },
+    { rootMargin: "200px 0px" } // pré-charge un peu avant
+  );
+
+  cards.forEach((card) => io.observe(card));
 }
 
 /* ===================== FORMULAIRE CONTACT ===================== */
@@ -663,7 +585,8 @@ function initAllCarousels() {
 
       if (res.ok) {
         form.reset();
-        document.getElementById("msg-count").textContent = "0";
+        const counter = document.getElementById("msg-count");
+        if (counter) counter.textContent = "0";
         fb.textContent =
           "Merci ! Votre message a bien été envoyé. Je vous réponds rapidement.";
         fb.className =
@@ -685,139 +608,16 @@ function initAllCarousels() {
   });
 })();
 
-/* ===================== PAYPAL ===================== */
-
-/** Construit la charge utile items pour le serveur (id + quantity) */
-function buildPayPalItemsFromCart() {
-  const cart = loadCart();
-  return cart.map((it) => ({
-    id: String(it.id),
-    quantity: Math.max(1, Number(it.qty) || 1),
-  }));
-}
-
-/** Helpers pour appeler tes routes Vercel */
-async function createOrderOnServer(items) {
-  const res = await fetch(`${API_BASE}/api/create-order`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ items }),
-  });
-  if (!res.ok)
-    throw new Error(`create-order ${res.status} ${await res.text()}`);
-  const data = await res.json();
-  return data.id; // orderID PayPal
-}
-
-async function captureOrderOnServer(orderID) {
-  const res = await fetch(`${API_BASE}/api/capture-order`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ orderID }),
-  });
-  if (!res.ok)
-    throw new Error(`capture-order ${res.status} ${await res.text()}`);
-  return res.json();
-}
-
-/** Affiche une petite note récap dans la zone PayPal (facultatif) */
-function renderNotePreview(products) {
-  const zone = document.getElementById("paypal-zone");
-  if (!zone) return;
-  const cart = loadCart();
-  if (!cart.length) return;
-
-  const old = zone.querySelector(".note-preview");
-  if (old) old.remove();
-
-  const ul = document.createElement("ul");
-  ul.className = "mt-3 text-sm text-gray-600 list-disc pl-5";
-  cart.forEach((it) => {
-    const p = products.find((x) => x.id === it.id);
-    const li = document.createElement("li");
-    li.textContent = `${p?.name || "Article"} — x${it.qty}`;
-    ul.appendChild(li);
-  });
-
-  const wrap = document.createElement("div");
-  wrap.className =
-    "note-preview mt-3 p-3 bg-gray-50 border border-gray-200 rounded";
-  const title = document.createElement("div");
-  title.className = "text-xs font-medium text-gray-700 mb-1";
-  title.textContent = "Contenu de votre commande :";
-  wrap.appendChild(title);
-  wrap.appendChild(ul);
-  zone.appendChild(wrap);
-}
-
-/** Monte le bouton PayPal (une seule fois) */
-async function mountPayPalButtons(products) {
-  const zone = document.getElementById("paypal-button-container");
-  if (!zone) return;
-  if (!window.paypal) return;
-
-  zone.innerHTML = "";
-
-  const cart = loadCart();
-  if (!cart.length) {
-    const p = document.createElement("p");
-    p.className = "text-sm text-gray-600";
-    p.textContent = "Ajoutez des articles pour activer le paiement PayPal.";
-    zone.appendChild(p);
-    return;
-  }
-
-  const items = buildPayPalItemsFromCart();
-
-  window.paypal
-    .Buttons({
-      style: { layout: "vertical", shape: "pill", label: "paypal" },
-
-      createOrder: async () => {
-        return await createOrderOnServer(items);
-      },
-
-      onApprove: async ({ orderID }) => {
-        await captureOrderOnServer(orderID);
-        saveCart([]);
-        updateCartCount();
-        location.href = "merci.html";
-      },
-
-      onError: (err) => {
-        console.error("PayPal error:", err);
-        alert("Impossible de lancer le paiement PayPal.");
-      },
-    })
-    .render("#paypal-button-container");
-}
-
-/* ===================== BOOTSTRAP PAGES ===================== */
+/* ===================== BOOTSTRAP PAGES (VITRINE) ===================== */
 
 document.addEventListener("DOMContentLoaded", () => {
-  updateCartCount();
-  const page = document.body.dataset.page;
+  const page = document.body.dataset.page; // "home" | "boutique" | autre
 
   fetchProducts().then((products) => {
     if (page === "home") {
       renderFeatured(products);
     } else if (page === "boutique") {
       renderBoutique(products);
-    } else if (page === "cart") {
-      renderCartPage(products);
-      renderNotePreview(products);
-      window.__lastProducts = products;
-
-      if (window.paypal) {
-        mountPayPalButtons(products);
-      } else {
-        // Déclenché par l'attribut onload du script PayPal dans panier.html
-        window.addEventListener(
-          "paypalLoaded",
-          () => mountPayPalButtons(products),
-          { once: true }
-        );
-      }
     }
   });
 });
