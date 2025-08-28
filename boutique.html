@@ -109,15 +109,18 @@
 
     <main class="pt-24 pb-12">
       <section
-        class="relative h-[22rem] flex items-center justify-center text-center text-white bg-fixed bg-center bg-cover"
-        style="background-image: url('images/yarnbann.jpg')"
+        class="relative min-h-[40vh] sm:min-h-[50vh] flex items-center justify-center text-center text-white bg-cover bg-center md:bg-fixed overflow-hidden"
+        style="
+          background-image: url('images/yarnbann.jpg');
+          background-position: 50% 40%;
+        "
       >
-        <!-- Overlay -->
-        <div class="absolute inset-0 bg-black/30"></div>
+        <div class="absolute inset-0 bg-black/35"></div>
 
-        <!-- Contenu -->
         <div class="relative z-10 px-4">
-          <h1 class="text-4xl md:text-6xl font-extrabold mb-12">La Boutique</h1>
+          <h1 class="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-6">
+            La Boutique
+          </h1>
         </div>
       </section>
 
@@ -260,11 +263,6 @@
             <li>
               <a href="mentions-legales.html" class="links-footer"
                 >Mentions légales</a
-              >
-            </li>
-            <li>
-              <a href="mentions-legales.html#cgv" class="links-footer"
-                >Conditions générales</a
               >
             </li>
           </ul>

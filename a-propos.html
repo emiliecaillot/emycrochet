@@ -112,20 +112,26 @@
       <!-- HERO -->
 
       <section
-        class="relative h-[22rem] md:h-[26rem] flex items-center justify-center text-center text-white bg-fixed bg-center bg-cover"
-        style="background-image: url('images/yarnbann.jpg')"
+        class="relative min-h-[45vh] sm:min-h-[55vh] flex items-center justify-center text-center text-white bg-cover bg-center md:bg-fixed overflow-hidden"
+        style="
+          background-image: url('images/yarnbann.jpg');
+          background-position: 50% 40%;
+        "
       >
         <div class="absolute inset-0 bg-black/40"></div>
+
         <div class="relative z-10 px-4">
           <p
-            class="uppercase tracking-widest text-sm md:text-base text-white/80"
+            class="uppercase tracking-widest text-xs sm:text-sm md:text-base text-white/80 mb-2"
           >
             Fait main en Bretagne
           </p>
-          <h1 class="text-4xl md:text-6xl font-extrabold mb-3">
+          <h1 class="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-3">
             À propos d’Emy’Crochet
           </h1>
-          <p class="text-base md:text-xl max-w-2xl mx-auto text-white/90">
+          <p
+            class="text-sm sm:text-base md:text-xl max-w-2xl mx-auto text-white/90"
+          >
             Des pièces uniques, simples, chaleureuses et accessibles.
           </p>
         </div>
@@ -539,11 +545,6 @@
             <li>
               <a href="mentions-legales.html" class="links-footer"
                 >Mentions légales</a
-              >
-            </li>
-            <li>
-              <a href="mentions-legales.html#cgv" class="links-footer"
-                >Conditions générales</a
               >
             </li>
           </ul>
