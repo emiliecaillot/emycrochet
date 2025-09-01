@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <!-- Favicons -->
     <link
       rel="icon"
@@ -20,9 +21,80 @@
       type="image/webp"
       href="images/logopastill.webp"
     />
-    <title>Mentions légales – Emy’Crochet</title>
+
+    <!-- Title -->
+    <title>Mentions légales – Emy’Crochet</title>
+
+    <!-- SEO Meta Description -->
+    <meta
+      name="description"
+      content="Mentions légales et conditions générales de vente d’Emy’Crochet, micro-entreprise artisanale en Bretagne. Retrouvez toutes les informations légales, politique de retour et conditions de remboursement."
+    />
+
+    <!-- Open Graph (Facebook, Instagram, WhatsApp) -->
+    <meta property="og:title" content="Mentions légales – Emy’Crochet" />
+    <meta
+      property="og:description"
+      content="Mentions légales et conditions générales de vente d’Emy’Crochet, micro-entreprise artisanale en Bretagne."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://emycrochet.vercel.app/mentions-legales.html"
+    />
+    <meta
+      property="og:image"
+      content="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/canonical.webp"
+    />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Mentions légales – Emy’Crochet" />
+    <meta
+      name="twitter:description"
+      content="Mentions légales et conditions générales de vente d’Emy’Crochet, micro-entreprise artisanale en Bretagne."
+    />
+    <meta
+      name="twitter:image"
+      content="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/canonical.webp"
+    />
+
+    <!-- Canonical -->
+    <link
+      rel="canonical"
+      href="https://emycrochet.vercel.app/mentions-legales.html"
+    />
+
+    <!-- Styles -->
     <link rel="stylesheet" href="css/style.css" />
+
+    <!-- JSON-LD (Organisation + Site) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "name": "Emy’Crochet",
+            "url": "https://emycrochet.vercel.app",
+            "logo": "https://emycrochet.vercel.app/images/logopastill.webp",
+            "sameAs": ["https://www.instagram.com/emy_crochet_22/"]
+          },
+          {
+            "@type": "WebSite",
+            "name": "Emy’Crochet",
+            "url": "https://emycrochet.vercel.app",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://emycrochet.vercel.app/boutique.html?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
+
   <body class="font-sans bg-gray-50" data-page="legal">
     <!-- En‑tête -->
     <header class="bg-white/50 shadow-md fixed top-0 left-0 right-0 z-50">

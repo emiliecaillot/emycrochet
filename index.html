@@ -3,11 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <!-- Favicons -->
     <link
       rel="icon"
       type="image/webp"
-      size="32x32"
+      sizes="32x32"
       href="images/logopastill.webp"
     />
     <link
@@ -20,10 +21,88 @@
       type="image/webp"
       href="images/logopastill.webp"
     />
-    <title>Emy’Crochet – créations au crochet</title>
 
+    <!-- SEO -->
+    <title>Emy’Crochet – créations au crochet faites main en Bretagne</title>
+    <meta
+      name="description"
+      content="Découvrez Emy’Crochet : amigurumis, hochets et accessoires faits main avec passion en Bretagne. Créations uniques, personnalisables."
+    />
+    <link rel="canonical" href="https://emycrochet.vercel.app/" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Emy’Crochet" />
+    <meta
+      property="og:title"
+      content="Emy’Crochet – créations au crochet faites main"
+    />
+    <meta
+      property="og:description"
+      content="Amigurumis, hochets et accessoires crochetés avec amour en Bretagne. Commande personnalisée après contact."
+    />
+    <meta property="og:url" content="https://emycrochet.vercel.app/" />
+    <meta
+      property="og:image"
+      content="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/canonical.webp"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Créations crochet Emy’Crochet : amigurumis, hochets et accessoires"
+    />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Emy’Crochet – créations au crochet" />
+    <meta
+      name="twitter:description"
+      content="Créations crochet faites main, uniques et personnalisables."
+    />
+    <meta
+      name="twitter:image"
+      content="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/canonical.webp"
+    />
+
+    <!-- Performance -->
+    <link
+      rel="preconnect"
+      href="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com"
+      crossorigin
+    />
+
+    <!-- Styles -->
     <link rel="stylesheet" href="css/style.css" />
+
+    <!-- JSON-LD (Organisation + Site) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "name": "Emy’Crochet",
+            "url": "https://emycrochet.vercel.app",
+            "logo": "https://emycrochet.vercel.app/images/logopastill.webp",
+            "sameAs": ["https://www.instagram.com/emy_crochet_22/"]
+          },
+          {
+            "@type": "WebSite",
+            "name": "Emy’Crochet",
+            "url": "https://emycrochet.vercel.app",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://emycrochet.vercel.app/boutique.html?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
+
   <!-- BODY -->
   <body class="font-roboto" data-page="home">
     <!-- En‑tête -->

@@ -5,14 +5,10 @@
  * ✅ Bandeau "Atelier" (délais dynamiques)
  * ✅ Rendus UI (home, boutique) avec carrousel
  * ✅ Formulaire de contact (envoi via form action)
- * ✅ Lazy-loading des images (loading="lazy" + decoding="async")
+ * ✅ Lazy-loading des images + hints (sizes, width/height, decoding)
  * ✅ Carrousel paresseux : seule la 1re image charge immédiatement
  * ✅ IntersectionObserver : promotion data-src → src quand la carte est visible
- *
- * ❌ Panier / localStorage
- * ❌ Options payantes
- * ❌ Livraison / Mondial Relay
- * ❌ Paiement (PayPal)
+ * ✅ Priorité réseau sur les 3 premières cartes produits
  */
 
 /* ===================== CONFIG GÉNÉRALE ===================== */
@@ -31,6 +27,17 @@ function toBoolean(val) {
     return lower === "true" || lower === "yes" || lower === "1";
   }
   return false;
+}
+
+/** Donne au navigateur tous les indices utiles pour bien charger l’image. */
+function tuneImg(img, { sizes, w = 800, h = 800, priority = false } = {}) {
+  img.loading = priority ? "eager" : "lazy";
+  img.decoding = "async";
+  if (sizes) img.sizes = sizes;
+  // Dimensions déclarées => moins de CLS + meilleur scheduling réseau
+  img.width = w;
+  img.height = h;
+  if (priority) img.fetchPriority = "high";
 }
 
 /* ===================== PRODUITS (Google Sheet) ===================== */
@@ -233,10 +240,13 @@ function renderFeatured(products) {
     const img = document.createElement("img");
     img.className = "w-96 h-96 object-cover rounded-xl mb-2";
     img.alt = product.name;
-    img.loading = "lazy";
-    img.decoding = "async";
-    // Si c'est la toute 1re image au-dessus du pli, tu peux donner une priorité :
-    // if (idx === 0) img.fetchPriority = "high";
+    // Priorité sur la 1re carte (souvent au-dessus du fold)
+    tuneImg(img, {
+      sizes: "(max-width: 640px) 90vw, 24rem",
+      w: 768,
+      h: 768,
+      priority: idx === 0,
+    });
     img.src = product.images[0] || "";
 
     const title = document.createElement("h3");
@@ -277,7 +287,9 @@ function renderBoutique(products) {
     return;
   }
 
-  activeProducts.forEach((product) => {
+  activeProducts.forEach((product, index) => {
+    const priority = index < 3; // prioriser les 3 premières cartes visibles
+
     const card = document.createElement("div");
     card.className =
       "bg-white rounded-lg shadow hover:shadow-lg transition p-4 flex flex-col";
@@ -299,8 +311,14 @@ function renderBoutique(products) {
         img.alt = `${product.name} ${i + 1}`;
         img.className =
           "w-full aspect-square object-cover flex-shrink-0 basis-full";
-        img.loading = "lazy";
-        img.decoding = "async";
+
+        // Hints d'image cohérents
+        tuneImg(img, {
+          sizes: "(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw",
+          w: 800,
+          h: 800,
+          priority: priority && i === 0, // priorité seulement sur la 1re slide des 3 premières cartes
+        });
 
         if (i === 0) {
           img.src = src; // charge seulement la première slide
@@ -339,8 +357,12 @@ function renderBoutique(products) {
       const img = document.createElement("img");
       img.className = "w-full aspect-square object-cover rounded mb-2";
       img.alt = product.name || "Création";
-      img.loading = "lazy";
-      img.decoding = "async";
+      tuneImg(img, {
+        sizes: "(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw",
+        w: 800,
+        h: 800,
+        priority, // priorité sur les 3 premières cartes
+      });
       img.src = product.images?.[0] || "";
       card.appendChild(img);
     }
@@ -439,7 +461,7 @@ function initCarousel(root) {
       b.setAttribute("aria-label", `Aller à l'image ${i + 1}`);
       b.addEventListener("click", () => {
         goTo(i);
-        ensureSlideLoaded(i); // <-- garantit que la slide cliquée est chargée
+        ensureSlideLoaded(i); // garantit que la slide cliquée est chargée
       });
       dotsWrap.appendChild(b);
     });
@@ -545,7 +567,7 @@ function setupCardObserver() {
         }
       });
     },
-    { rootMargin: "200px 0px" } // pré-charge un peu avant
+    { rootMargin: "600px 0px" } // pré-charge nettement avant l’entrée à l’écran
   );
 
   cards.forEach((card) => io.observe(card));

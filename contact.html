@@ -3,11 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <!-- Favicons -->
     <link
       rel="icon"
       type="image/webp"
-      size="32x32"
+      sizes="32x32"
       href="images/logopastill.webp"
     />
     <link
@@ -20,9 +21,88 @@
       type="image/webp"
       href="images/logopastill.webp"
     />
-    <title>Contact – Emy’Crochet</title>
+
+    <!-- SEO -->
+    <title>Contact – Emy’Crochet</title>
+    <meta
+      name="description"
+      content="Besoin d’une création personnalisée ou d’un suivi de commande ? Contactez Emy’Crochet facilement par email ou via le formulaire de contact."
+    />
+    <link rel="canonical" href="https://emycrochet.vercel.app/contact.html" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Emy’Crochet" />
+    <meta property="og:title" content="Contact – Emy’Crochet" />
+    <meta
+      property="og:description"
+      content="Une question, un projet sur-mesure ou un suivi de commande ? Contactez-moi directement via Emy’Crochet."
+    />
+    <meta
+      property="og:url"
+      content="https://emycrochet.vercel.app/contact.html"
+    />
+    <meta
+      property="og:image"
+      content="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/canonical.webp"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Contactez Emy’Crochet pour vos créations personnalisées en crochet"
+    />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Contact – Emy’Crochet" />
+    <meta
+      name="twitter:description"
+      content="Une question ou une commande sur-mesure ? Écrivez à Emy’Crochet et recevez une réponse rapide."
+    />
+    <meta
+      name="twitter:image"
+      content="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/canonical.webp"
+    />
+
+    <!-- Performance -->
+    <link
+      rel="preconnect"
+      href="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com"
+      crossorigin
+    />
+
+    <!-- Styles -->
     <link rel="stylesheet" href="css/style.css" />
+
+    <!-- JSON-LD (Organisation + Site) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "name": "Emy’Crochet",
+            "url": "https://emycrochet.vercel.app",
+            "logo": "https://emycrochet.vercel.app/images/logopastill.webp",
+            "sameAs": ["https://www.instagram.com/emy_crochet_22/"]
+          },
+          {
+            "@type": "WebSite",
+            "name": "Emy’Crochet",
+            "url": "https://emycrochet.vercel.app",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://emycrochet.vercel.app/boutique.html?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
+
   <body class="font-sans bg-gray-50" data-page="contact">
     <!-- En‑tête -->
     <header class="bg-white/50 shadow-md fixed top-0 left-0 right-0 z-50">

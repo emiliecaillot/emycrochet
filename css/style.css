@@ -445,6 +445,9 @@
   .h-\[26rem\] {
     height: 26rem;
   }
+  .h-full {
+    height: 100%;
+  }
   .max-h-20 {
     max-height: calc(var(--spacing) * 20);
   }

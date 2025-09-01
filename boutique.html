@@ -2,27 +2,98 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Favicons -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Favicons (locaux) -->
     <link
       rel="icon"
       type="image/webp"
-      size="32x32"
+      sizes="32x32"
       href="images/logopastill.webp"
+    />
+    <link rel="apple-touch-icon" href="images/logopastill.webp" />
+
+    <!-- Title + Description -->
+    <title>Boutique – Emy’Crochet | Créations au crochet faites main</title>
+    <meta
+      name="description"
+      content="Découvrez les créations au crochet Emy’Crochet : amigurumis, hochets et accessoires faits main en Bretagne. Commande sur mesure après contact."
+    />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://emycrochet.vercel.app/boutique.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Emy’Crochet" />
+    <meta property="og:title" content="Boutique – Emy’Crochet" />
+    <meta
+      property="og:description"
+      content="Créations au crochet faites main : amigurumis, hochets et accessoires. Commande sur mesure."
+    />
+    <meta
+      property="og:url"
+      content="https://emycrochet.vercel.app/boutique.html"
+    />
+    <meta
+      property="og:image"
+      content="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/canonical.webp"
+    />
+    <meta property="og:image:alt" content="Créations au crochet Emy’Crochet" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Boutique – Emy’Crochet" />
+    <meta
+      name="twitter:description"
+      content="Créations au crochet faites main. Commande sur mesure."
+    />
+    <meta
+      name="twitter:image"
+      content="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/canonical.webp"
+    />
+
+    <!-- Perf: prépare la connexion au domaine des images -->
+    <link
+      rel="preconnect"
+      href="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com"
+      crossorigin
     />
     <link
-      rel="shortcut icon"
-      type="image/webp"
-      href="images/logopastill.webp"
+      rel="dns-prefetch"
+      href="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com"
     />
-    <link
-      rel="apple-touch-icon"
-      type="image/webp"
-      href="images/logopastill.webp"
-    />
-    <title>Boutique – Emy’Crochet</title>
-    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/style.css" />
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "name": "Emy’Crochet",
+            "url": "https://emycrochet.vercel.app",
+            "logo": "https://emycrochet.vercel.app/images/logopastill.webp",
+            "sameAs": ["https://www.instagram.com/emy_crochet_22/"]
+          },
+          {
+            "@type": "WebSite",
+            "name": "Emy’Crochet",
+            "url": "https://emycrochet.vercel.app",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://emycrochet.vercel.app/boutique.html?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
+
   <body class="font-sans bg-gray-50" data-page="boutique">
     <!-- En‑tête -->
     <header class="bg-white/50 shadow-md fixed top-0 left-0 right-0 z-50">
@@ -109,14 +180,22 @@
 
     <main class="pt-24 pb-12">
       <section
-        class="relative min-h-[40vh] sm:min-h-[50vh] flex items-center justify-center text-center text-white bg-cover bg-center md:bg-fixed overflow-hidden"
-        style="
-          background-image: url('images/yarnbann.jpg');
-          background-position: 50% 40%;
-        "
+        class="relative min-h-[40vh] sm:min-h-[50vh] flex items-center justify-center text-center text-white overflow-hidden"
       >
+        <picture>
+          <img
+            src="https://ahhbzhg6xp4hmzfn.public.blob.vercel-storage.com/yarnbann.jpg"
+            alt="Bannière Boutique – pelotes de laine"
+            class="absolute inset-0 w-full h-full object-cover"
+            loading="eager"
+            decoding="async"
+            fetchpriority="high"
+            sizes="100vw"
+            width="1600"
+            height="900"
+          />
+        </picture>
         <div class="absolute inset-0 bg-black/35"></div>
-
         <div class="relative z-10 px-4">
           <h1 class="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-6">
             La Boutique
