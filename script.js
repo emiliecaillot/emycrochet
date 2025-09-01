@@ -63,18 +63,34 @@ async function fetchProducts() {
     dmax: col("delay_max"),
     featured: col("featured"),
     active: col("active"),
+    // nouvelle colonne : category OU categories
+    category:
+      (headers.indexOf("category") !== -1 && headers.indexOf("category")) ||
+      (headers.indexOf("categories") !== -1 && headers.indexOf("categories")) ||
+      -1,
   };
 
   return lines.slice(1).map((line) => {
     const cols = line.split("\t");
     const get = (i) => (i >= 0 ? (cols[i] ?? "").trim() : "");
 
+    // Prix (support virgule)
     const rawPrice = get(idx.price).replace(",", ".");
     const priceNum = parseFloat(rawPrice) || 0;
 
+    // Images (séparateur |)
     const images = get(idx.images)
       ? get(idx.images)
           .split("|")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+
+    // Catégories (séparateur | ou ,)
+    const catsRaw = get(idx.category);
+    const categories = catsRaw
+      ? catsRaw
+          .split(/[|,]/)
           .map((s) => s.trim())
           .filter(Boolean)
       : [];
@@ -91,8 +107,125 @@ async function fetchProducts() {
       delay_max: get(idx.dmax),
       featured: toBoolean(get(idx.featured)),
       active: toBoolean(get(idx.active)),
+      categories, // ⬅️ nouveau champ exploitable pour les filtres
     };
   });
+}
+
+/* ============ CATEGORIES (helpers + état) ============ */
+
+// Ordre suggéré en tête (le reste sera trié alpha)
+const PREFERRED_CAT_ORDER = ["Animal", "Décoration", "Peluche", "Bébé"];
+
+// État global simple
+let __ALL_PRODUCTS = [];
+let __SELECTED_CATS = new Set(); // valeurs en lower-case
+
+function norm(s) {
+  return (s || "").toLowerCase();
+}
+
+function getAllCategories(products) {
+  const set = new Set();
+  products.forEach((p) => (p.categories || []).forEach((c) => set.add(c)));
+  // On remet d’abord l’ordre préféré, puis les autres alpha
+  const preferred = PREFERRED_CAT_ORDER.filter((c) => set.has(c));
+  const others = [...set]
+    .filter((c) => !PREFERRED_CAT_ORDER.includes(c))
+    .sort((a, b) => a.localeCompare(b));
+  return [...preferred, ...others];
+}
+
+function isProductInSelectedCats(product) {
+  if (!__SELECTED_CATS.size) return true; // aucun filtre => tout passe
+  const cats = (product.categories || []).map((c) => c.toLowerCase());
+  // une seule catégorie sélectionnée => contient ?
+  const [sel] = Array.from(__SELECTED_CATS);
+  return cats.includes(sel);
+}
+
+function filterProductsByCats(products) {
+  return products.filter((p) => p.active && isProductInSelectedCats(p));
+}
+
+// FONCTION CATEGORIE FILTRE
+function renderCategoryFilters(products) {
+  const wrap = document.getElementById("category-filters");
+  if (!wrap) return;
+
+  wrap.innerHTML = "";
+
+  const allCats = getAllCategories(products);
+
+  // Bouton "Tous"
+  const btnAll = document.createElement("button");
+  btnAll.type = "button";
+  btnAll.className =
+    "px-3 py-1.5 rounded-full border text-sm hover:bg-gray-50 data-[active=true]:bg-[#85ccd5] data-[active=true]:text-white cursor-pointer";
+  btnAll.textContent = "Tous";
+  btnAll.dataset.active = String(__SELECTED_CATS.size === 0);
+  btnAll.addEventListener("click", () => {
+    __SELECTED_CATS.clear();
+    // Mettre à jour l'état visuel
+    wrap
+      .querySelectorAll("button")
+      .forEach((b) => (b.dataset.active = "false"));
+    btnAll.dataset.active = "true";
+    refreshBoutique();
+  });
+  wrap.appendChild(btnAll);
+
+  // Boutons par catégorie
+  allCats.forEach((cat) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className =
+      "px-3 py-1.5 rounded-full border text-sm hover:bg-gray-50 data-[active=true]:bg-[#85ccd5] data-[active=true]:text-white cursor-pointer";
+    b.textContent = cat;
+    b.dataset.cat = cat;
+    b.dataset.active = String(__SELECTED_CATS.has(norm(cat)));
+
+    b.addEventListener("click", () => {
+      const key = norm(cat);
+      const alreadyActive =
+        __SELECTED_CATS.has(key) && __SELECTED_CATS.size === 1;
+
+      // 1) Si on reclique sur la même catégorie active => retire le filtre (montre tout)
+      if (alreadyActive) {
+        __SELECTED_CATS.clear();
+      } else {
+        // 2) Sinon, sélection EXCLUSIVE : on remplace par la nouvelle catégorie
+        __SELECTED_CATS.clear();
+        __SELECTED_CATS.add(key);
+      }
+
+      // MAJ visuelle : un seul actif (ou aucun)
+      const wrap = document.getElementById("category-filters");
+      wrap
+        .querySelectorAll("button")
+        .forEach((btn) => (btn.dataset.active = "false"));
+      // Active l’unique cat si on en a une
+      if (__SELECTED_CATS.size === 1) {
+        b.dataset.active = "true";
+        // le bouton "Tous" doit être inactif
+        const btnAll = wrap.querySelector("button:first-child");
+        if (btnAll) btnAll.dataset.active = "false";
+      } else {
+        // aucun filtre -> bouton "Tous" actif
+        const btnAll = wrap.querySelector("button:first-child");
+        if (btnAll) btnAll.dataset.active = "true";
+      }
+
+      refreshBoutique();
+    });
+
+    wrap.appendChild(b);
+  });
+}
+
+function refreshBoutique() {
+  const filtered = filterProductsByCats(__ALL_PRODUCTS);
+  renderBoutique(filtered);
 }
 
 /* ===================== ATELIER – Bandeau délais dynamiques ===================== */
@@ -639,7 +772,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (page === "home") {
       renderFeatured(products);
     } else if (page === "boutique") {
-      renderBoutique(products);
+      __ALL_PRODUCTS = products;
+      __SELECTED_CATS = new Set();
+
+      // 🔹 Pré-sélection via ?cat=xxx
+      const params = new URLSearchParams(location.search);
+      const pre = params.get("cat");
+      if (pre) {
+        const first = pre
+          .split(/[|,]/)
+          .map((s) => s.trim())
+          .filter(Boolean)[0];
+        if (first) {
+          __SELECTED_CATS.add(first.toLowerCase());
+        }
+      }
+
+      // Ensuite on rend les filtres + la boutique
+      renderCategoryFilters(__ALL_PRODUCTS);
+      refreshBoutique();
     }
   });
 });

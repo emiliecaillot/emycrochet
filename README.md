@@ -78,6 +78,7 @@ emycrochet/
 - **Accessibilité (a11y) :** ajouter ARIA labels, vérifier contrastes, navigation clavier.
 - **SEO :** titres uniques, balises meta et alt optimisés.
 - **Images :** exporter en WebP/AVIF + redimension automatique (Vercel Image Optimization ou build script).
+- **Catégories :** Méthode de filtrage pour la recherche des créations
 - **Dark mode :** activer via Tailwind (dark:).
 - **Filtrage / recherche :** par type de création, taille ou couleur.
 - **Blog / actualités :** présenter mes nouveautés, conseils ou tutoriels crochet.
